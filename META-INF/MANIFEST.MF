@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: eclipse plugin hishidama utility
+Bundle-SymbolicName: jp.hishidama.eclipse_plugin.utility
+Bundle-Version: 0.0.1.qualifier
+Bundle-Activator: jp.hishidama.eclipse_plugin.util.internal.Activator
+Bundle-Vendor: hishidama
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.jface.text,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: jp.hishidama.eclipse_plugin.dialog,
+ jp.hishidama.eclipse_plugin.util
