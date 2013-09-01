@@ -15,4 +15,5 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: jp.hishidama.eclipse_plugin.dialog,
+ jp.hishidama.eclipse_plugin.java,
  jp.hishidama.eclipse_plugin.util
