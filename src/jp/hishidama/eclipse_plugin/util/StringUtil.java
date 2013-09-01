@@ -15,6 +15,10 @@ public class StringUtil {
 		return (s != null) && !s.isEmpty();
 	}
 
+	public static String nonNull(String s) {
+		return (s != null) ? s : "";
+	}
+
 	public static String get(String s, String defaultString) {
 		if (nonEmpty(s)) {
 			return s;
