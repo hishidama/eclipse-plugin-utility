@@ -92,10 +92,10 @@ public class FileUtil {
 			}
 		}
 
-		return openFile(file);
+		return openEditor(file);
 	}
 
-	public static boolean openFile(IFile file) {
+	public static boolean openEditor(IFile file) {
 		if (file.exists()) {
 			try {
 				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
