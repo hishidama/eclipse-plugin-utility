@@ -63,6 +63,41 @@ public class StringUtil {
 		return Character.toLowerCase(s.charAt(0)) + s.substring(1);
 	}
 
+	public static String toSnakeCase(String name) {
+		if (name == null) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder(name.length());
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			if (Character.isUpperCase(c)) {
+				if (sb.length() > 0) {
+					sb.append('_');
+				}
+				c = Character.toLowerCase(c);
+			}
+			sb.append(c);
+		}
+		return sb.toString();
+	}
+
+	public static String toSmallCamelCase(String name) {
+		if (name == null) {
+			return null;
+		}
+		String[] ss = name.split("\\_");
+		if (ss.length <= 1) {
+			return name.toLowerCase();
+		} else {
+			StringBuilder sb = new StringBuilder(name.length());
+			sb.append(ss[0].toLowerCase());
+			for (int i = 1; i < ss.length; i++) {
+				sb.append(toFirstUpper(ss[i]));
+			}
+			return sb.toString();
+		}
+	}
+
 	public static String append(String packageName, String name) {
 		if (packageName.endsWith(".")) {
 			packageName = packageName.substring(0, packageName.length() - 1);
@@ -92,6 +127,34 @@ public class StringUtil {
 			return name.substring(n + 1);
 		} else {
 			return name;
+		}
+	}
+
+	public static String removeEnds(String s, String remove) {
+		if (s.endsWith(remove)) {
+			s = s.substring(0, s.length() - remove.length());
+		}
+		return s;
+	}
+
+	public static String mkString(List<String> list) {
+		if (list == null) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		mkString(sb, list);
+		return sb.toString();
+	}
+
+	public static void mkString(StringBuilder sb, List<String> list) {
+		boolean first = true;
+		for (String s : list) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append(s);
 		}
 	}
 
