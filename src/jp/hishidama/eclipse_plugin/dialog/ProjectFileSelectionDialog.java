@@ -7,6 +7,7 @@ import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -50,9 +51,10 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 		IPath path = proj.append(initialPath);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IPath rel = path.makeRelativeTo(root.getLocation());
-		IFile file = root.getFile(rel);
-
-		super.setInitialSelection(file);
+		IResource file = root.findMember(rel);
+		if (file != null) {
+			super.setInitialSelection(file);
+		}
 	}
 
 	public void addFileterExtension(String... ext) {
@@ -81,13 +83,13 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 		}
 		String[] r = new String[result.length];
 		for (int i = 0; i < result.length; i++) {
-			IFile file = (IFile) result[i];
+			IResource file = (IResource) result[i];
 			r[i] = convert(file);
 		}
 		return r;
 	}
 
-	protected String convert(IFile file) {
+	protected String convert(IResource file) {
 		IPath path = file.getLocation();
 		IPath base = project.getLocation();
 		IPath rel = path.makeRelativeTo(base);
