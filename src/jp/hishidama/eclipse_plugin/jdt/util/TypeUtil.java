@@ -33,4 +33,56 @@ public class TypeUtil {
 			return null;
 		}
 	}
+
+	public static boolean isExtends(IType type, String name) {
+		if (type == null) {
+			return false;
+		}
+		try {
+			String superClass = resolveTypeName(type.getSuperclassName(), type);
+			if (superClass == null || "java.lang.Object".equals(superClass)) {
+				return false;
+			}
+			if (name.equals(superClass)) {
+				return true;
+			}
+			IType superType = type.getJavaProject().findType(superClass);
+			return isExtends(superType, name);
+		} catch (JavaModelException e) {
+			// do nothing
+		}
+		return false;
+	}
+
+	public static boolean isImplements(IType type, String interfaceName) {
+		if (type == null) {
+			return false;
+		}
+		try {
+			String[] ss = type.getSuperInterfaceNames();
+			for (String s : ss) {
+				if (interfaceName.equals(s)) {
+					return true;
+				}
+			}
+			String superClass = type.getSuperclassName();
+			if (superClass == null || "java.lang.Object".equals(superClass)) {
+				return false;
+			}
+			String[][] resolved = type.resolveType(superClass);
+			for (String[] names : resolved) {
+				String resPack = names[0];
+				String resName = names[1];
+				IJavaProject javaProject = type.getJavaProject();
+				IType superType = javaProject.findType(resPack, resName);
+				boolean r = isImplements(superType, interfaceName);
+				if (r) {
+					return r;
+				}
+			}
+			return false;
+		} catch (JavaModelException e) {
+			return false;
+		}
+	}
 }
