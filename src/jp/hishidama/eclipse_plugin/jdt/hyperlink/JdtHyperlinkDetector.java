@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.jdt.hyperlink;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
@@ -66,6 +67,12 @@ public abstract class JdtHyperlinkDetector extends AbstractHyperlinkDetector {
 					return mr;
 				}
 				break;
+			case IJavaElement.LOCAL_VARIABLE:
+				IHyperlink[] vr = detectVariableHyperlinks((ILocalVariable) code, word);
+				if (vr != null) {
+					return vr;
+				}
+				break;
 			}
 		}
 		return null;
@@ -118,6 +125,10 @@ public abstract class JdtHyperlinkDetector extends AbstractHyperlinkDetector {
 	}
 
 	protected IHyperlink[] detectMethodHyperlinks(IMethod method, IRegion word) {
+		return null;
+	}
+
+	protected IHyperlink[] detectVariableHyperlinks(ILocalVariable variable, IRegion word) {
 		return null;
 	}
 }
