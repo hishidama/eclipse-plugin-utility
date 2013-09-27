@@ -122,6 +122,9 @@ public class StringUtil {
 	}
 
 	public static String getSimpleName(String name) {
+		if (name == null) {
+			return null;
+		}
 		int n = name.lastIndexOf('.');
 		if (n >= 0) {
 			return name.substring(n + 1);
