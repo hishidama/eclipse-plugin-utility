@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.TableColumn;
 public abstract class ModifiableTable<R> {
 	private List<R> list = new ArrayList<R>();
 
+	private boolean editOnly = false;
 	private TableViewer viewer;
 	private Table table;
 	private List<Button> selectionButton = new ArrayList<Button>();
@@ -50,6 +51,10 @@ public abstract class ModifiableTable<R> {
 				doEdit();
 			}
 		});
+	}
+
+	public void setEditOnly(boolean editOnly) {
+		this.editOnly = editOnly;
 	}
 
 	public void addColumn(String text, int width, int style) {
@@ -112,6 +117,9 @@ public abstract class ModifiableTable<R> {
 					doAdd();
 				}
 			});
+			if (editOnly) {
+				button.setEnabled(false);
+			}
 		}
 		{
 			Button button = new Button(field, SWT.PUSH);
@@ -133,7 +141,11 @@ public abstract class ModifiableTable<R> {
 					doMove(-1);
 				}
 			});
-			selectionButton.add(button);
+			if (editOnly) {
+				button.setEnabled(false);
+			} else {
+				selectionButton.add(button);
+			}
 		}
 		{
 			Button button = new Button(field, SWT.PUSH);
@@ -144,7 +156,11 @@ public abstract class ModifiableTable<R> {
 					doMove(+1);
 				}
 			});
-			selectionButton.add(button);
+			if (editOnly) {
+				button.setEnabled(false);
+			} else {
+				selectionButton.add(button);
+			}
 		}
 		{
 			Button button = new Button(field, SWT.PUSH);
@@ -155,7 +171,11 @@ public abstract class ModifiableTable<R> {
 					doDelete();
 				}
 			});
-			selectionButton.add(button);
+			if (editOnly) {
+				button.setEnabled(false);
+			} else {
+				selectionButton.add(button);
+			}
 		}
 	}
 
