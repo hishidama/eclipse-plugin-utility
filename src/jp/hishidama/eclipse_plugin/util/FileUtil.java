@@ -22,8 +22,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -78,21 +80,75 @@ public class FileUtil {
 	}
 
 	public static boolean openFile(IFile file, String className) {
-		if (className != null) {
-			IProject project = file.getProject();
-			IJavaProject javaProject = JavaCore.create(project);
-			if (javaProject != null) {
+		return openFile(file, className, null);
+	}
+
+	public static boolean openFile(IFile file, String className, String methodName) {
+		if (openFile(file.getProject(), className, methodName)) {
+			return true;
+		}
+
+		return openEditor(file);
+	}
+
+	public static boolean openFile(IProject project, String className) {
+		return openFile(project, className, null);
+	}
+
+	public static boolean openFile(IProject project, String className, String methodName) {
+		IType type = findClass(project, className);
+		if (type != null) {
+			IMethod method = findMethod(type, methodName);
+			if (method != null) {
 				try {
-					IType type = javaProject.findType(className);
-					JavaUI.openInEditor(type);
+					JavaUI.openInEditor(method);
 					return true;
 				} catch (Exception e) {
 					// fall through
 				}
 			}
-		}
 
-		return openEditor(file);
+			try {
+				JavaUI.openInEditor(type);
+				return true;
+			} catch (Exception e) {
+				// fall through
+			}
+		}
+		return false;
+	}
+
+	private static IType findClass(IProject project, String className) {
+		if (project == null || className == null) {
+			return null;
+		}
+		IJavaProject javaProject = JavaCore.create(project);
+		if (javaProject != null) {
+			try {
+				IType type = javaProject.findType(className);
+				return type;
+			} catch (Exception e) {
+				// fall through
+			}
+		}
+		return null;
+	}
+
+	private static IMethod findMethod(IType type, String methodName) {
+		if (methodName == null) {
+			return null;
+		}
+		try {
+			IMethod[] ms = type.getMethods();
+			for (IMethod m : ms) {
+				if (m.getElementName().equals(methodName)) {
+					return m;
+				}
+			}
+		} catch (JavaModelException e) {
+			// fall through
+		}
+		return null;
 	}
 
 	public static boolean openEditor(IFile file) {
