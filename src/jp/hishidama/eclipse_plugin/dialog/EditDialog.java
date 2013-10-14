@@ -8,10 +8,12 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -23,6 +25,25 @@ import org.eclipse.swt.widgets.Tree;
 public abstract class EditDialog extends Dialog {
 
 	private String windowTitle;
+
+	protected final ModifyListener MODIFY_REFRESH_LISTENER = new ModifyListener() {
+		@Override
+		public void modifyText(ModifyEvent e) {
+			refreshOkButton();
+		}
+	};
+
+	protected final SelectionListener SELECT_REFRESH_LISTENER = new SelectionListener() {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			refreshOkButton();
+		}
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			refreshOkButton();
+		}
+	};
 
 	public EditDialog(Shell parentShell, String windowTitle) {
 		super(parentShell);
@@ -75,20 +96,25 @@ public abstract class EditDialog extends Dialog {
 		final Button button2 = new Button(field, SWT.RADIO);
 		button2.setText(label2);
 
-		button1.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				refreshOkButton();
-			}
-		});
+		button1.addSelectionListener(SELECT_REFRESH_LISTENER);
 
 		return button1;
 	}
 
 	protected Text createTextField(Composite composite, String label) {
 		createLabel(composite, label);
-		Text text = crateText(composite);
+		Text text = createText(composite);
 		return text;
+	}
+
+	protected Combo createComboField(Composite composite, String label, String[] list) {
+		createLabel(composite, label);
+		Combo combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+		for (String s : list) {
+			combo.add(s);
+		}
+		combo.addSelectionListener(SELECT_REFRESH_LISTENER);
+		return combo;
 	}
 
 	protected Tree createTreeField(Composite composite, String label) {
@@ -105,23 +131,42 @@ public abstract class EditDialog extends Dialog {
 		return table;
 	}
 
+	public static class TextButtonPair {
+		public Text text;
+		public Button button;
+	}
+
+	protected TextButtonPair createTextButtonField(Composite composite, String label, String buttonLabel) {
+		createLabel(composite, label);
+
+		TextButtonPair pair = new TextButtonPair();
+		pair.text = createText(composite, 256);
+		pair.button = createPushButton(composite, buttonLabel);
+		return pair;
+	}
+
 	protected void createLabel(Composite composite, String text) {
 		Label label = new Label(composite, SWT.LEFT);
 		label.setText(text);
 	}
 
-	protected Text crateText(Composite composite) {
+	protected Text createText(Composite composite) {
+		return createText(composite, 128 * 3);
+	}
+
+	protected Text createText(Composite composite, int widthHint) {
 		final Text text = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		data.widthHint = 128 * 3;
+		data.widthHint = widthHint;
 		text.setLayoutData(data);
-		text.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				refreshOkButton();
-			}
-		});
+		text.addModifyListener(MODIFY_REFRESH_LISTENER);
 		return text;
+	}
+
+	protected Button createPushButton(Composite composite, String text) {
+		Button button = new Button(composite, SWT.PUSH);
+		button.setText(text);
+		return button;
 	}
 
 	protected Tree createTree(Composite composite) {
@@ -159,17 +204,12 @@ public abstract class EditDialog extends Dialog {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		table.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				refreshOkButton();
-			}
-		});
+		table.addSelectionListener(SELECT_REFRESH_LISTENER);
 
 		return table;
 	}
 
-	private boolean refreshOkButton() {
+	protected boolean refreshOkButton() {
 		Button ok = getButton(IDialogConstants.OK_ID);
 		if (ok == null) {
 			return false;
