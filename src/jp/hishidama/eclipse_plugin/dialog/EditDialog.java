@@ -117,6 +117,7 @@ public abstract class EditDialog extends Dialog {
 		createLabel(composite, label);
 
 		Combo combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+		combo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		for (String s : list) {
 			combo.add(s);
 		}
