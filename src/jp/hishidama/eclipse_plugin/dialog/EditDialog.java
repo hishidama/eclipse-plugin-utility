@@ -24,7 +24,8 @@ import org.eclipse.swt.widgets.Tree;
 
 public abstract class EditDialog extends Dialog {
 
-	private String windowTitle;
+	private final String windowTitle;
+	private final int numColumns;
 
 	protected final ModifyListener MODIFY_REFRESH_LISTENER = new ModifyListener() {
 		@Override
@@ -46,8 +47,13 @@ public abstract class EditDialog extends Dialog {
 	};
 
 	public EditDialog(Shell parentShell, String windowTitle) {
+		this(parentShell, windowTitle, 2);
+	}
+
+	public EditDialog(Shell parentShell, String windowTitle, int numColumns) {
 		super(parentShell);
 		this.windowTitle = windowTitle;
+		this.numColumns = numColumns;
 	}
 
 	@Override
@@ -71,7 +77,7 @@ public abstract class EditDialog extends Dialog {
 	private Composite createDialogAreaComposite(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		GridLayout layout = new GridLayout(2, false);
+		GridLayout layout = new GridLayout(numColumns, false);
 		layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
 		layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
 		layout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
@@ -109,11 +115,14 @@ public abstract class EditDialog extends Dialog {
 
 	protected Combo createComboField(Composite composite, String label, String[] list) {
 		createLabel(composite, label);
+
 		Combo combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		for (String s : list) {
 			combo.add(s);
 		}
 		combo.addSelectionListener(SELECT_REFRESH_LISTENER);
+
+		createDummyColumn(composite, 2);
 		return combo;
 	}
 
@@ -121,6 +130,8 @@ public abstract class EditDialog extends Dialog {
 		createLabel(composite, label);
 
 		Tree tree = createTree(composite);
+
+		createDummyColumn(composite, 2);
 		return tree;
 	}
 
@@ -128,6 +139,8 @@ public abstract class EditDialog extends Dialog {
 		createLabel(composite, label);
 
 		Table table = createCheckedTable(composite);
+
+		createDummyColumn(composite, 2);
 		return table;
 	}
 
@@ -140,9 +153,21 @@ public abstract class EditDialog extends Dialog {
 		createLabel(composite, label);
 
 		TextButtonPair pair = new TextButtonPair();
-		pair.text = createText(composite, 256);
+		pair.text = createText(composite, 256, 1);
 		pair.button = createPushButton(composite, buttonLabel);
+
+		createDummyColumn(composite, 3);
 		return pair;
+	}
+
+	protected Button createCheckButtonField(Composite composite, String label, String text) {
+		createLabel(composite, label);
+
+		Button button = new Button(composite, SWT.CHECK);
+		button.setText(text);
+
+		createDummyColumn(composite, 2);
+		return button;
 	}
 
 	protected void createLabel(Composite composite, String text) {
@@ -151,13 +176,14 @@ public abstract class EditDialog extends Dialog {
 	}
 
 	protected Text createText(Composite composite) {
-		return createText(composite, 128 * 3);
+		return createText(composite, 128 * 3, numColumns - 1);
 	}
 
-	protected Text createText(Composite composite, int widthHint) {
+	protected Text createText(Composite composite, int widthHint, int span) {
 		final Text text = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = widthHint;
+		data.horizontalSpan = span;
 		text.setLayoutData(data);
 		text.addModifyListener(MODIFY_REFRESH_LISTENER);
 		return text;
@@ -207,6 +233,12 @@ public abstract class EditDialog extends Dialog {
 		table.addSelectionListener(SELECT_REFRESH_LISTENER);
 
 		return table;
+	}
+
+	protected void createDummyColumn(Composite composite, int existsColumn) {
+		for (int i = existsColumn; i < numColumns; i++) {
+			new Label(composite, SWT.NONE);
+		}
 	}
 
 	protected boolean refreshOkButton() {
