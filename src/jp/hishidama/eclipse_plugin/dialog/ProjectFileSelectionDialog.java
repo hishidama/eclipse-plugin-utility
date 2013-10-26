@@ -5,6 +5,7 @@ import java.util.Set;
 
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -51,9 +52,22 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 		IPath path = proj.append(initialPath);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IPath rel = path.makeRelativeTo(root.getLocation());
-		IResource file = root.findMember(rel);
+		IResource r = root.findMember(rel);
+		if (r != null) {
+			super.setInitialSelection(r);
+		}
+		IFile file = root.getFile(rel);
 		if (file != null) {
-			super.setInitialSelection(file);
+			if (file.exists()) {
+				super.setInitialSelection(file);
+			} else {
+				for (IContainer folder = file.getParent(); folder != null; folder = folder.getParent()) {
+					if (folder.exists()) {
+						super.setInitialSelection(folder);
+						break;
+					}
+				}
+			}
 		}
 	}
 
