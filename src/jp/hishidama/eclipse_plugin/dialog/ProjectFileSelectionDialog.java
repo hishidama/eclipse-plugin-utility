@@ -55,6 +55,7 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 		IResource r = root.findMember(rel);
 		if (r != null) {
 			super.setInitialSelection(r);
+			return;
 		}
 		IFile file = root.getFile(rel);
 		if (file != null) {
