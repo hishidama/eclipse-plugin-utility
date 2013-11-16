@@ -101,11 +101,11 @@ public abstract class ModifiableTable<R> {
 		}
 	}
 
-	protected Image getImage(R element, int columIndex) {
+	protected Image getImage(R element, int columnIndex) {
 		return null; // do override
 	}
 
-	protected abstract String getText(R element, int columIndex);
+	protected abstract String getText(R element, int columnIndex);
 
 	public void createButtonArea(Composite field) {
 		{
