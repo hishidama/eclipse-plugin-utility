@@ -68,6 +68,11 @@ public abstract class ModifiableTable<R> {
 		// refresh();
 	}
 
+	public void removeAll() {
+		list.clear();
+		// table.removeAll();
+	}
+
 	protected class ContentProvider implements IStructuredContentProvider {
 
 		@Override
