@@ -1,5 +1,7 @@
 package jp.hishidama.eclipse_plugin.jface;
 
+import static jp.hishidama.eclipse_plugin.util.StringUtil.nonNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -59,7 +61,7 @@ public abstract class ModifiableTable<R> {
 
 	public void addColumn(String text, int width, int style) {
 		TableColumn column = new TableColumn(table, style);
-		column.setText(text);
+		column.setText(nonNull(text));
 		column.setWidth(width);
 	}
 
