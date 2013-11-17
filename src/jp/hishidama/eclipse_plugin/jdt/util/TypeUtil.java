@@ -1,5 +1,8 @@
 package jp.hishidama.eclipse_plugin.jdt.util;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -55,13 +58,17 @@ public class TypeUtil {
 	}
 
 	public static boolean isImplements(IType type, String interfaceName) {
+		return isImplements(type, Collections.singleton(interfaceName));
+	}
+
+	public static boolean isImplements(IType type, Set<String> interfaceName) {
 		if (type == null) {
 			return false;
 		}
 		try {
 			String[] ss = type.getSuperInterfaceNames();
 			for (String s : ss) {
-				if (interfaceName.equals(s)) {
+				if (interfaceName.contains(s)) {
 					return true;
 				}
 			}
@@ -70,6 +77,9 @@ public class TypeUtil {
 				return false;
 			}
 			String[][] resolved = type.resolveType(superClass);
+			if (resolved == null) {
+				return false;
+			}
 			for (String[] names : resolved) {
 				String resPack = names[0];
 				String resName = names[1];
