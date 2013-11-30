@@ -18,6 +18,11 @@ import org.eclipse.ui.PlatformUI;
 public class ClassSelectionDialog extends FilteredTypesSelectionDialog {
 
 	public static ClassSelectionDialog create(Shell shell, IProject project, IRunnableContext context, Filter extension) {
+		return create(shell, project, context, IJavaSearchConstants.CLASS, extension);
+	}
+
+	public static ClassSelectionDialog create(Shell shell, IProject project, IRunnableContext context, int kind,
+			Filter extension) {
 		IJavaProject javaProject = JavaCore.create(project);
 		IJavaElement[] elements = new IJavaElement[] { javaProject };
 		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
@@ -30,12 +35,12 @@ public class ClassSelectionDialog extends FilteredTypesSelectionDialog {
 			extension.setProject(javaProject);
 		}
 
-		return new ClassSelectionDialog(shell, context, scope, extension);
+		return new ClassSelectionDialog(shell, context, scope, kind, extension);
 	}
 
-	public ClassSelectionDialog(Shell shell, IRunnableContext context, IJavaSearchScope scope,
+	public ClassSelectionDialog(Shell shell, IRunnableContext context, IJavaSearchScope scope, int kind,
 			TypeSelectionExtension extension) {
-		super(shell, false, context, scope, IJavaSearchConstants.CLASS, extension);
+		super(shell, false, context, scope, kind, extension);
 		setHelpAvailable(false);
 	}
 
