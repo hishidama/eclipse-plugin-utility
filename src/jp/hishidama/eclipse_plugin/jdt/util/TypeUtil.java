@@ -4,8 +4,10 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 
 public class TypeUtil {
 
@@ -93,6 +95,16 @@ public class TypeUtil {
 			return false;
 		} catch (JavaModelException e) {
 			return false;
+		}
+	}
+
+	public static String getMethodReturnTypeName(IMethod method) {
+		try {
+			String signature = method.getReturnType();
+			String name = Signature.toString(signature);
+			return resolveTypeName(name, method.getDeclaringType());
+		} catch (JavaModelException e) {
+			return null;
 		}
 	}
 }
