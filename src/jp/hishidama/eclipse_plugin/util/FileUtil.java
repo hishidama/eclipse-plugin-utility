@@ -49,6 +49,11 @@ public class FileUtil {
 		}
 	}
 
+	public static void createFolder(IProject project, IFile file) throws CoreException {
+		IPath path = file.getProjectRelativePath().removeLastSegments(1);
+		createFolder(project, path);
+	}
+
 	public static void createFolder(IProject project, IPath path) throws CoreException {
 		IFolder folder = project.getFolder(path);
 		if (!folder.exists()) {
