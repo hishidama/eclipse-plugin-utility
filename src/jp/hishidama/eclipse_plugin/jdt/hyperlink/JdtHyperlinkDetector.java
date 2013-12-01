@@ -62,9 +62,23 @@ public abstract class JdtHyperlinkDetector extends AbstractHyperlinkDetector {
 				}
 				break;
 			case IJavaElement.METHOD:
-				IHyperlink[] mr = detectMethodHyperlinks((IMethod) code, word);
-				if (mr != null) {
-					return mr;
+				IMethod method = (IMethod) code;
+				boolean c;
+				try {
+					c = method.isConstructor();
+				} catch (JavaModelException e) {
+					c = false;
+				}
+				if (c) {
+					IHyperlink[] cr = detectConstructorHyperlinks(method, word);
+					if (cr != null) {
+						return cr;
+					}
+				} else {
+					IHyperlink[] mr = detectMethodHyperlinks(method, word);
+					if (mr != null) {
+						return mr;
+					}
 				}
 				break;
 			case IJavaElement.LOCAL_VARIABLE:
@@ -121,6 +135,10 @@ public abstract class JdtHyperlinkDetector extends AbstractHyperlinkDetector {
 	}
 
 	protected IHyperlink[] detectFieldHyperlinks(IField field, IRegion word) {
+		return null;
+	}
+
+	protected IHyperlink[] detectConstructorHyperlinks(IMethod method, IRegion word) {
 		return null;
 	}
 
