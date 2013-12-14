@@ -98,6 +98,19 @@ public class TypeUtil {
 		}
 	}
 
+	public static IMethod findMethod(IType type, String methodName) {
+		try {
+			for (IMethod method : type.getMethods()) {
+				if (methodName.equals(method.getElementName())) {
+					return method;
+				}
+			}
+		} catch (JavaModelException e) {
+			return null;
+		}
+		return null;
+	}
+
 	public static String getMethodReturnTypeName(IMethod method) {
 		try {
 			String signature = method.getReturnType();
