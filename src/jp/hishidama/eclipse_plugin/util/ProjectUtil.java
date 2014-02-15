@@ -38,6 +38,13 @@ public class ProjectUtil {
 				}
 			}
 		}
+
+		IEditorPart editor = HandlerUtil.getActiveEditor(event);
+		IFile file = FileUtil.getFile(editor);
+		if (file != null) {
+			return file.getProject();
+		}
+
 		return null;
 	}
 }
