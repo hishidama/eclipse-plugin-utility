@@ -3,6 +3,8 @@ package jp.hishidama.eclipse_plugin.jdt.util;
 import java.util.Collections;
 import java.util.Set;
 
+import jp.hishidama.eclipse_plugin.util.StringUtil;
+
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -39,24 +41,49 @@ public class TypeUtil {
 		}
 	}
 
-	public static boolean isExtends(IType type, String name) {
-		if (type == null) {
-			return false;
-		}
-		try {
-			String superClass = resolveTypeName(type.getSuperclassName(), type);
-			if (superClass == null || "java.lang.Object".equals(superClass)) {
+	public static boolean isExtends(IType type, final String name) {
+		IsExtends delegator = new IsExtends() {
+			@Override
+			protected boolean accept(String className) {
+				return className.equals(name);
+			}
+		};
+		return delegator.isExtends(type);
+	}
+
+	public static boolean isExtends(IType type, final String prefix, final String suffix) {
+		IsExtends delegator = new IsExtends() {
+			@Override
+			protected boolean accept(String className) {
+				String name = StringUtil.getSimpleName(className);
+				return name.startsWith(prefix) && name.endsWith(suffix);
+			}
+		};
+		return delegator.isExtends(type);
+	}
+
+	private static abstract class IsExtends {
+		public boolean isExtends(IType type) {
+			if (type == null) {
 				return false;
 			}
-			if (name.equals(superClass)) {
-				return true;
+			try {
+				String superClass = resolveTypeName(type.getSuperclassName(), type);
+				if (superClass == null || "java.lang.Object".equals(superClass)) {
+					return false;
+				}
+				if (accept(superClass)) {
+					return true;
+				}
+				IType superType = type.getJavaProject().findType(superClass);
+				return isExtends(superType);
+			} catch (JavaModelException e) {
+				// do nothing
 			}
-			IType superType = type.getJavaProject().findType(superClass);
-			return isExtends(superType, name);
-		} catch (JavaModelException e) {
-			// do nothing
+			return false;
 		}
-		return false;
+
+		protected abstract boolean accept(String className);
 	}
 
 	public static boolean isImplements(IType type, String interfaceName) {
