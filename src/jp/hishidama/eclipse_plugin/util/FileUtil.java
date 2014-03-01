@@ -223,7 +223,7 @@ public class FileUtil {
 				try {
 					br.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					LogUtil.warnStatus("load()", e);
 				}
 			}
 		} catch (UnsupportedEncodingException e) {
@@ -232,7 +232,7 @@ public class FileUtil {
 			try {
 				is.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				LogUtil.warnStatus("load()", e);
 			}
 		}
 	}
@@ -246,7 +246,7 @@ public class FileUtil {
 		try {
 			file = project.getFile(fname);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogUtil.warnStatus("loadProperties()", e);
 		}
 		if (file == null || !file.exists()) {
 			LogUtil.logWarn(MessageFormat.format("not found property file. file={0}", fname));
@@ -278,13 +278,13 @@ public class FileUtil {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					LogUtil.warnStatus("loadProperties()", e);
 				}
 			} else if (is != null) {
 				try {
 					is.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					LogUtil.warnStatus("loadProperties()", e);
 				}
 			}
 		}
