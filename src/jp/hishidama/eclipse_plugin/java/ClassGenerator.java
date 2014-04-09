@@ -12,9 +12,14 @@ public abstract class ClassGenerator {
 	protected String packageName;
 	protected String className;
 
+	private Map<String, String> classNameMap;
+	private Set<String> simpleNameSet;
+
 	public String generate(String packageName, String className) {
 		this.packageName = packageName;
 		this.className = className;
+		this.classNameMap = new HashMap<String, String>();
+		this.simpleNameSet = new HashSet<String>();
 		initialize();
 		return generate();
 	}
@@ -52,10 +57,6 @@ public abstract class ClassGenerator {
 	}
 
 	protected abstract void appendClass(StringBuilder sb);
-
-	//
-	private Map<String, String> classNameMap = new HashMap<String, String>();
-	private Set<String> simpleNameSet = new HashSet<String>();
 
 	protected final String getCachedClassName(String className) {
 		if (className == null) {
