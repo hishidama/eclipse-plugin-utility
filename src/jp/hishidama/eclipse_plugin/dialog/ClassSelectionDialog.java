@@ -21,9 +21,19 @@ public class ClassSelectionDialog extends FilteredTypesSelectionDialog {
 		return create(shell, project, context, IJavaSearchConstants.CLASS, extension);
 	}
 
+	public static ClassSelectionDialog create(Shell shell, IJavaProject javaProject, IRunnableContext context,
+			Filter extension) {
+		return create(shell, javaProject, context, IJavaSearchConstants.CLASS, extension);
+	}
+
 	public static ClassSelectionDialog create(Shell shell, IProject project, IRunnableContext context, int kind,
 			Filter extension) {
 		IJavaProject javaProject = JavaCore.create(project);
+		return create(shell, javaProject, context, kind, extension);
+	}
+
+	public static ClassSelectionDialog create(Shell shell, IJavaProject javaProject, IRunnableContext context,
+			int kind, Filter extension) {
 		IJavaElement[] elements = new IJavaElement[] { javaProject };
 		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
 
