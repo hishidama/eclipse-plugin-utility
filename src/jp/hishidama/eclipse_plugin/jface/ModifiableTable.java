@@ -59,6 +59,10 @@ public abstract class ModifiableTable<R> {
 		this.editOnly = editOnly;
 	}
 
+	public boolean isEditOnly() {
+		return editOnly;
+	}
+
 	public void addColumn(String text, int width, int style) {
 		TableColumn column = new TableColumn(table, style);
 		column.setText(nonNull(text));
@@ -115,19 +119,7 @@ public abstract class ModifiableTable<R> {
 	protected abstract String getText(R element, int columnIndex);
 
 	public void createButtonArea(Composite field) {
-		{
-			Button button = new Button(field, SWT.PUSH);
-			button.setText("add");
-			button.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					doAdd();
-				}
-			});
-			if (editOnly) {
-				button.setEnabled(false);
-			}
-		}
+		createAddButton(field);
 		{
 			Button button = new Button(field, SWT.PUSH);
 			button.setText("edit");
@@ -186,6 +178,20 @@ public abstract class ModifiableTable<R> {
 		}
 	}
 
+	protected void createAddButton(Composite field) {
+		Button button = new Button(field, SWT.PUSH);
+		button.setText("add");
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				doAdd();
+			}
+		});
+		if (editOnly) {
+			button.setEnabled(false);
+		}
+	}
+
 	public void refresh() {
 		viewer.refresh();
 		refreshButtons();
@@ -200,6 +206,10 @@ public abstract class ModifiableTable<R> {
 
 	protected void doAdd() {
 		R element = createElement();
+		doAdd(element);
+	}
+
+	protected void doAdd(R element) {
 		if (element == null) {
 			return;
 		}
