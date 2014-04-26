@@ -92,6 +92,14 @@ public abstract class EditWizardPage extends WizardPage {
 		return list;
 	}
 
+	protected final Button createCheckButtonField(Composite composite, String label, String buttonLabel) {
+		createLabel(composite, label);
+
+		Button button = new Button(composite, SWT.CHECK);
+		button.setText(buttonLabel);
+		return button;
+	}
+
 	protected final void validate(boolean putMessage) {
 		String message = validate();
 		if (message != null) {
