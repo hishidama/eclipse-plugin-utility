@@ -1,6 +1,7 @@
 package jp.hishidama.eclipse_plugin.java;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class ClassGenerator {
+	protected static final Set<String> PRIMITIVE_SET = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+			"boolean", "byte", "short", "char", "int", "long", "float", "double")));
+
 	protected String packageName;
 	protected String className;
 
@@ -24,7 +28,7 @@ public abstract class ClassGenerator {
 		return generate();
 	}
 
-	public String getFullClassName() {
+	public final String getFullClassName() {
 		return packageName + "." + className;
 	}
 
@@ -51,7 +55,7 @@ public abstract class ClassGenerator {
 		List<String> list = new ArrayList<String>(classNameMap.keySet());
 		Collections.sort(list);
 		for (String s : list) {
-			if (!s.isEmpty()) {
+			if (!s.isEmpty() && !s.startsWith("java.lang.")) {
 				sb.append("import ");
 				sb.append(s);
 				sb.append(";\n");
@@ -63,6 +67,9 @@ public abstract class ClassGenerator {
 	protected abstract void appendClass(StringBuilder sb);
 
 	protected final String getCachedClassName(String className) {
+		if (PRIMITIVE_SET.contains(className)) {
+			return className;
+		}
 		if (className == null) {
 			className = "";
 		}
