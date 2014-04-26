@@ -24,6 +24,10 @@ public abstract class ClassGenerator {
 		return generate();
 	}
 
+	public String getFullClassName() {
+		return packageName + "." + className;
+	}
+
 	protected abstract void initialize();
 
 	private String generate() {
