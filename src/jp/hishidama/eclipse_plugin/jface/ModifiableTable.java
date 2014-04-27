@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 public abstract class ModifiableTable<R> {
-	private List<R> list = new ArrayList<R>();
+	private List<R> rowList = new ArrayList<R>();
 
 	private boolean editOnly = false;
 	private TableViewer viewer;
@@ -36,7 +36,7 @@ public abstract class ModifiableTable<R> {
 
 		viewer.setContentProvider(new ContentProvider());
 		viewer.setLabelProvider(new LabelProvider());
-		viewer.setInput(list);
+		viewer.setInput(rowList);
 
 		table = viewer.getTable();
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -70,12 +70,12 @@ public abstract class ModifiableTable<R> {
 	}
 
 	public void addItem(R element) {
-		list.add(element);
+		rowList.add(element);
 		// refresh();
 	}
 
 	public void removeAll() {
-		list.clear();
+		rowList.clear();
 		// table.removeAll();
 	}
 
@@ -215,10 +215,10 @@ public abstract class ModifiableTable<R> {
 		}
 
 		int index = table.getSelectionIndex();
-		if (index < 0 || list.size() <= index) {
-			list.add(element);
+		if (index < 0 || rowList.size() <= index) {
+			rowList.add(element);
 		} else {
-			list.add(index, element);
+			rowList.add(index, element);
 		}
 		refresh();
 	}
@@ -227,10 +227,10 @@ public abstract class ModifiableTable<R> {
 
 	protected void doEdit() {
 		int index = table.getSelectionIndex();
-		if (index < 0 || list.size() <= index) {
+		if (index < 0 || rowList.size() <= index) {
 			return;
 		}
-		editElement(list.get(index));
+		editElement(rowList.get(index));
 		refresh();
 	}
 
@@ -240,23 +240,23 @@ public abstract class ModifiableTable<R> {
 		Set<R> set = new HashSet<R>();
 		int[] index = table.getSelectionIndices();
 		for (int i : index) {
-			set.add(list.get(i));
+			set.add(rowList.get(i));
 		}
 
 		if (z > 0) {
 			for (int i = index.length - 1; i >= 0; i--) {
 				int fr = index[i];
 				int to = fr + 1;
-				if (to < list.size() && !set.contains(list.get(to))) {
-					swap(list, fr, to);
+				if (to < rowList.size() && !set.contains(rowList.get(to))) {
+					swap(rowList, fr, to);
 				}
 			}
 		} else {
 			for (int i = 0; i < index.length; i++) {
 				int fr = index[i];
 				int to = fr - 1;
-				if (to >= 0 && !set.contains(list.get(to))) {
-					swap(list, fr, to);
+				if (to >= 0 && !set.contains(rowList.get(to))) {
+					swap(rowList, fr, to);
 				}
 			}
 		}
@@ -273,12 +273,12 @@ public abstract class ModifiableTable<R> {
 	protected void doDelete() {
 		int[] index = table.getSelectionIndices();
 		for (int i = index.length - 1; i >= 0; i--) {
-			list.remove(index[i]);
+			rowList.remove(index[i]);
 		}
 		refresh();
 	}
 
 	public List<R> getElementList() {
-		return list;
+		return rowList;
 	}
 }
