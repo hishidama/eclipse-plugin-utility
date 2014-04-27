@@ -58,6 +58,10 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 			return;
 		}
 		IFile file = root.getFile(rel);
+		setInitialSelection(file);
+	}
+
+	public void setInitialSelection(IResource file) {
 		if (file != null) {
 			if (file.exists()) {
 				super.setInitialSelection(file);
