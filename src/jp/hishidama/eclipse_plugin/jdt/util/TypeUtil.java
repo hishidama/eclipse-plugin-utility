@@ -91,37 +91,41 @@ public class TypeUtil {
 	}
 
 	public static boolean isImplements(IType type, Set<String> interfaceName) {
+		return findImplements(type, interfaceName) != null;
+	}
+
+	public static String findImplements(IType type, Set<String> interfaceName) {
 		if (type == null) {
-			return false;
+			return null;
 		}
 		try {
 			String[] ss = type.getSuperInterfaceNames();
 			for (String s : ss) {
 				if (interfaceName.contains(s)) {
-					return true;
+					return s;
 				}
 			}
 			String superClass = type.getSuperclassName();
 			if (superClass == null || "java.lang.Object".equals(superClass)) {
-				return false;
+				return null;
 			}
 			String[][] resolved = type.resolveType(superClass);
 			if (resolved == null) {
-				return false;
+				return null;
 			}
 			for (String[] names : resolved) {
 				String resPack = names[0];
 				String resName = names[1];
 				IJavaProject javaProject = type.getJavaProject();
 				IType superType = javaProject.findType(resPack, resName);
-				boolean r = isImplements(superType, interfaceName);
-				if (r) {
+				String r = findImplements(superType, interfaceName);
+				if (r != null) {
 					return r;
 				}
 			}
-			return false;
+			return null;
 		} catch (JavaModelException e) {
-			return false;
+			return null;
 		}
 	}
 
