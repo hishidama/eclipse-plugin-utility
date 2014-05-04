@@ -89,7 +89,7 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 	}
 
 	// ------ validation --------
-	private void doStatusUpdate() {
+	protected void doStatusUpdate() {
 		// status of all used components
 		IStatus[] status = getAllComponentStatus();
 
