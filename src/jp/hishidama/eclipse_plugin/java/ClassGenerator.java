@@ -67,7 +67,7 @@ public abstract class ClassGenerator {
 	protected abstract void appendClass(StringBuilder sb);
 
 	protected final String getCachedClassName(String className) {
-		if (PRIMITIVE_SET.contains(className)) {
+		if (isPrimitive(className)) {
 			return className;
 		}
 		if (className == null) {
@@ -86,6 +86,10 @@ public abstract class ClassGenerator {
 			simpleNameSet.add(sname);
 			return sname;
 		}
+	}
+
+	protected final boolean isPrimitive(String className) {
+		return PRIMITIVE_SET.contains(className);
 	}
 
 	protected static String getSimpleName(String name) {
