@@ -43,12 +43,16 @@ public class AnnotationUtil {
 		return getAnnotationValue(type, type, annotationName, memberName);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T getAnnotationValue(IType type, IAnnotatable a, String annotationName, String memberName) {
 		IAnnotation ann = getAnnotation(type, a, annotationName);
-		if (ann != null) {
+		return getAnnotationValue(ann, memberName);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getAnnotationValue(IAnnotation annotation, String memberName) {
+		if (annotation != null) {
 			try {
-				for (IMemberValuePair pair : ann.getMemberValuePairs()) {
+				for (IMemberValuePair pair : annotation.getMemberValuePairs()) {
 					if (memberName.equals(pair.getMemberName())) {
 						return (T) pair.getValue();
 					}
