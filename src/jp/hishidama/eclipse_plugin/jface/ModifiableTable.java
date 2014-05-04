@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 public abstract class ModifiableTable<R> {
 	private List<R> rowList = new ArrayList<R>();
@@ -29,9 +30,11 @@ public abstract class ModifiableTable<R> {
 	private boolean editOnly = false;
 	private TableViewer viewer;
 	private Table table;
+	private int tableStyle;
 	private List<Button> selectionButton = new ArrayList<Button>();
 
 	public ModifiableTable(Composite parent, int style) {
+		this.tableStyle = style;
 		viewer = new TableViewer(parent, style);
 
 		viewer.setContentProvider(new ContentProvider());
@@ -161,21 +164,7 @@ public abstract class ModifiableTable<R> {
 				selectionButton.add(button);
 			}
 		}
-		{
-			Button button = new Button(field, SWT.PUSH);
-			button.setText("delete");
-			button.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					doDelete();
-				}
-			});
-			if (editOnly) {
-				button.setEnabled(false);
-			} else {
-				selectionButton.add(button);
-			}
-		}
+		createDeleteButton(field);
 	}
 
 	protected void createAddButton(Composite field) {
@@ -189,6 +178,22 @@ public abstract class ModifiableTable<R> {
 		});
 		if (editOnly) {
 			button.setEnabled(false);
+		}
+	}
+
+	protected void createDeleteButton(Composite field) {
+		Button button = new Button(field, SWT.PUSH);
+		button.setText("delete");
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				doDelete();
+			}
+		});
+		if (editOnly) {
+			button.setEnabled(false);
+		} else {
+			selectionButton.add(button);
 		}
 	}
 
@@ -237,6 +242,14 @@ public abstract class ModifiableTable<R> {
 	protected abstract void editElement(R element);
 
 	protected void doMove(int z) {
+		List<Boolean> checkList = null;
+		if ((tableStyle & SWT.CHECK) != 0) {
+			checkList = new ArrayList<Boolean>(table.getItemCount());
+			for (TableItem item : table.getItems()) {
+				checkList.add(item.getChecked());
+			}
+		}
+
 		Set<R> set = new HashSet<R>();
 		int[] index = table.getSelectionIndices();
 		for (int i : index) {
@@ -249,6 +262,9 @@ public abstract class ModifiableTable<R> {
 				int to = fr + 1;
 				if (to < rowList.size() && !set.contains(rowList.get(to))) {
 					swap(rowList, fr, to);
+					if (checkList != null) {
+						swap(checkList, fr, to);
+					}
 				}
 			}
 		} else {
@@ -257,15 +273,25 @@ public abstract class ModifiableTable<R> {
 				int to = fr - 1;
 				if (to >= 0 && !set.contains(rowList.get(to))) {
 					swap(rowList, fr, to);
+					if (checkList != null) {
+						swap(checkList, fr, to);
+					}
 				}
 			}
 		}
 		refresh();
+
+		if (checkList != null) {
+			int i = 0;
+			for (TableItem item : table.getItems()) {
+				item.setChecked(checkList.get(i++));
+			}
+		}
 	}
 
-	private void swap(List<R> list, int index1, int index2) {
-		R r1 = list.get(index1);
-		R r2 = list.get(index2);
+	private <T> void swap(List<T> list, int index1, int index2) {
+		T r1 = list.get(index1);
+		T r2 = list.get(index2);
 		list.set(index1, r2);
 		list.set(index2, r1);
 	}
@@ -276,6 +302,14 @@ public abstract class ModifiableTable<R> {
 			rowList.remove(index[i]);
 		}
 		refresh();
+	}
+
+	public void setChecked(int i, boolean checked) {
+		table.getItem(i).setChecked(checked);
+	}
+
+	public boolean getChecked(int i) {
+		return table.getItem(i).getChecked();
 	}
 
 	public List<R> getElementList() {
