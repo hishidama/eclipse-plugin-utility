@@ -6,6 +6,7 @@ import java.util.Set;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -28,6 +29,9 @@ public class TypeUtil {
 	}
 
 	public static String resolveTypeName(String name, IType type) {
+		if (name == null) {
+			return null;
+		}
 		try {
 			String[][] types = type.resolveType(name);
 			if (types != null) {
@@ -150,5 +154,37 @@ public class TypeUtil {
 		} catch (JavaModelException e) {
 			return null;
 		}
+	}
+
+	public static String getVariableTypeName(ILocalVariable variable) {
+		String signature = variable.getTypeSignature();
+		String name = Signature.toString(signature);
+		return resolveTypeNameAll(name, variable.getDeclaringMember().getDeclaringType());
+	}
+
+	public static String resolveTypeNameAll(String name, IType type) {
+		StringBuilder sb = new StringBuilder(name.length() * 2);
+		for (int i = 0; i < name.length();) {
+			int n = indexOf(name, "<,>", i);
+			if (n < 0) {
+				sb.append(resolveTypeName(name.substring(i), type));
+				break;
+			}
+
+			sb.append(resolveTypeName(name.substring(i, n), type));
+			sb.append(name.charAt(n));
+			i = n + 1;
+		}
+		return sb.toString();
+	}
+
+	private static int indexOf(String s, String search, int start) {
+		for (int i = start; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (search.indexOf(c) >= 0) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }
