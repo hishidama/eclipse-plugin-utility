@@ -289,4 +289,15 @@ public class FileUtil {
 			}
 		}
 	}
+
+	public static boolean copy(IFile src, IFile dst) {
+		try {
+			createFolder(dst.getProject(), dst);
+			dst.create(src.getContents(), true, null);
+			return true;
+		} catch (CoreException e) {
+			LogUtil.logWarn("copy error.", e);
+			return false;
+		}
+	}
 }
