@@ -197,6 +197,35 @@ public abstract class ModifiableTable<R> {
 		}
 	}
 
+	public void createCheckButtonArea(Composite field) {
+		{
+			Button button = new Button(field, SWT.PUSH);
+			button.setText("Check all");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					setCheckedAll(true);
+				}
+			});
+		}
+		{
+			Button button = new Button(field, SWT.PUSH);
+			button.setText("Uncheck all");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					setCheckedAll(false);
+				}
+			});
+		}
+	}
+
+	public void setCheckedAll(boolean checked) {
+		for (TableItem item : table.getItems()) {
+			item.setChecked(checked);
+		}
+	}
+
 	public void refresh() {
 		viewer.refresh();
 		refreshButtons();
