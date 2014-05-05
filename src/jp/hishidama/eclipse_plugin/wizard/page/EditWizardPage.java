@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -21,21 +22,23 @@ public abstract class EditWizardPage extends WizardPage {
 	protected final ModifyListener MODIFY_REFRESH_LISTENER = new ModifyListener() {
 		@Override
 		public void modifyText(ModifyEvent e) {
-			validate(true);
+			validate(visible);
 		}
 	};
 
 	protected final SelectionListener SELECT_REFRESH_LISTENER = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			validate(true);
+			validate(visible);
 		}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			validate(true);
+			validate(visible);
 		}
 	};
+
+	private boolean visible;
 
 	public EditWizardPage(String pageName) {
 		super(pageName);
@@ -98,6 +101,26 @@ public abstract class EditWizardPage extends WizardPage {
 		Button button = new Button(composite, SWT.CHECK);
 		button.setText(buttonLabel);
 		return button;
+	}
+
+	protected final Combo createComboField(Composite composite, int span, String label) {
+		createLabel(composite, label);
+		return createCombo(composite, span);
+	}
+
+	private Combo createCombo(Composite composite, int span) {
+		Combo combo = new Combo(composite, SWT.READ_ONLY);
+		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		data.horizontalSpan = span;
+		combo.setLayoutData(data);
+		combo.addModifyListener(MODIFY_REFRESH_LISTENER);
+		return combo;
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+		super.setVisible(visible);
 	}
 
 	protected final void validate(boolean putMessage) {
