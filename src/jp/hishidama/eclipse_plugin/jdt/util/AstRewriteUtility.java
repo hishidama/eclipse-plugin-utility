@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MemberValuePair;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
@@ -86,17 +87,34 @@ public class AstRewriteUtility {
 		return a;
 	}
 
+	protected final SingleMemberAnnotation newSingleMemberAnnotation(String name, String value) {
+		SingleMemberAnnotation a = ast.newSingleMemberAnnotation();
+		a.setTypeName(ast.newName(getImportRewrite().addImport(name)));
+		a.setValue(ast.newName(value));
+		return a;
+	}
+
 	protected final NormalAnnotation newNormalAnnotation(String name) {
 		NormalAnnotation a = ast.newNormalAnnotation();
 		a.setTypeName(ast.newName(getImportRewrite().addImport(name)));
 		return a;
 	}
 
-	protected final SingleMemberAnnotation newSingleMemberAnnotation(String name, String value) {
-		SingleMemberAnnotation a = ast.newSingleMemberAnnotation();
-		a.setTypeName(ast.newName(getImportRewrite().addImport(name)));
-		a.setValue(ast.newName(value));
-		return a;
+	@SuppressWarnings("unchecked")
+	protected final void addTo(NormalAnnotation annotation, MemberValuePair member) {
+		List<MemberValuePair> vlist = annotation.values();
+		vlist.add(member);
+	}
+
+	protected final MemberValuePair newMemberValuePair(String name, String value) {
+		MemberValuePair pair = ast.newMemberValuePair();
+		pair.setName(ast.newSimpleName(name));
+
+		StringLiteral s = ast.newStringLiteral();
+		s.setLiteralValue(value);
+		pair.setValue(s);
+
+		return pair;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -114,6 +132,14 @@ public class AstRewriteUtility {
 		pair.setValue(array);
 
 		return pair;
+	}
+
+	// Method
+
+	protected final MethodDeclaration newMethodDeclaration(String name) {
+		MethodDeclaration m = ast.newMethodDeclaration();
+		m.setName(ast.newSimpleName(name));
+		return m;
 	}
 
 	// Block
