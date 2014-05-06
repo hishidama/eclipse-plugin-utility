@@ -9,6 +9,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -25,7 +26,7 @@ import org.eclipse.swt.widgets.Tree;
 public abstract class EditDialog extends Dialog {
 
 	private final String windowTitle;
-	private final int numColumns;
+	protected final int numColumns;
 
 	protected final ModifyListener MODIFY_REFRESH_LISTENER = new ModifyListener() {
 		@Override
@@ -76,7 +77,7 @@ public abstract class EditDialog extends Dialog {
 
 	private Composite createDialogAreaComposite(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		GridLayout layout = new GridLayout(numColumns, false);
 		layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
 		layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
@@ -169,6 +170,15 @@ public abstract class EditDialog extends Dialog {
 
 		createDummyColumn(composite, 2);
 		return button;
+	}
+
+	protected Composite createFillLayout(Composite composite, int span) {
+		Composite field = new Composite(composite, SWT.NONE);
+		GridData data = new GridData();
+		data.horizontalSpan = span;
+		field.setLayoutData(data);
+		field.setLayout(new FillLayout(SWT.HORIZONTAL));
+		return field;
 	}
 
 	protected void createLabel(Composite composite, String text) {
