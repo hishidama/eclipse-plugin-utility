@@ -108,7 +108,7 @@ public abstract class EditWizardPage extends WizardPage {
 		return createCombo(composite, span);
 	}
 
-	private Combo createCombo(Composite composite, int span) {
+	protected final Combo createCombo(Composite composite, int span) {
 		Combo combo = new Combo(composite, SWT.READ_ONLY);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.horizontalSpan = span;
@@ -121,6 +121,10 @@ public abstract class EditWizardPage extends WizardPage {
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 		super.setVisible(visible);
+	}
+
+	protected final boolean isVisible() {
+		return visible;
 	}
 
 	protected final void validate(boolean putMessage) {
