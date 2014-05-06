@@ -27,11 +27,15 @@ import org.eclipse.swt.widgets.TableItem;
 public abstract class ModifiableTable<R> {
 	private List<R> rowList = new ArrayList<R>();
 
-	private boolean editOnly = false;
+	private boolean useAdd = true;
+	private boolean useEdit = true;
+	private boolean useMove = true;
+	private boolean useDelete = true;
+
 	private TableViewer viewer;
-	private Table table;
+	protected final Table table;
 	private int tableStyle;
-	private List<Button> selectionButton = new ArrayList<Button>();
+	protected final List<Button> selectionButton = new ArrayList<Button>();
 
 	public ModifiableTable(Composite parent, int style) {
 		this.tableStyle = style;
@@ -42,7 +46,7 @@ public abstract class ModifiableTable<R> {
 		viewer.setInput(rowList);
 
 		table = viewer.getTable();
-		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		table.setLayoutData(createGridData());
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.addSelectionListener(new SelectionListener() {
@@ -58,12 +62,23 @@ public abstract class ModifiableTable<R> {
 		});
 	}
 
-	public void setEditOnly(boolean editOnly) {
-		this.editOnly = editOnly;
+	protected GridData createGridData() {
+		return new GridData(GridData.FILL_BOTH);
 	}
 
-	public boolean isEditOnly() {
-		return editOnly;
+	public void setEditOnly(boolean editOnly) {
+		if (editOnly) {
+			setEnableButton(false, true, false, false);
+		} else {
+			setEnableButton(true, true, true, true);
+		}
+	}
+
+	public void setEnableButton(boolean useAdd, boolean useEdit, boolean useMove, boolean useDelete) {
+		this.useAdd = useAdd;
+		this.useEdit = useEdit;
+		this.useMove = useMove;
+		this.useDelete = useDelete;
 	}
 
 	public void addColumn(String text, int width, int style) {
@@ -123,17 +138,7 @@ public abstract class ModifiableTable<R> {
 
 	public void createButtonArea(Composite field) {
 		createAddButton(field);
-		{
-			Button button = new Button(field, SWT.PUSH);
-			button.setText("edit");
-			button.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					doEdit();
-				}
-			});
-			selectionButton.add(button);
-		}
+		createEditButton(field);
 		{
 			Button button = new Button(field, SWT.PUSH);
 			button.setText("up");
@@ -143,10 +148,10 @@ public abstract class ModifiableTable<R> {
 					doMove(-1);
 				}
 			});
-			if (editOnly) {
-				button.setEnabled(false);
-			} else {
+			if (useMove) {
 				selectionButton.add(button);
+			} else {
+				button.setEnabled(false);
 			}
 		}
 		{
@@ -158,10 +163,10 @@ public abstract class ModifiableTable<R> {
 					doMove(+1);
 				}
 			});
-			if (editOnly) {
-				button.setEnabled(false);
-			} else {
+			if (useMove) {
 				selectionButton.add(button);
+			} else {
+				button.setEnabled(false);
 			}
 		}
 		createDeleteButton(field);
@@ -176,7 +181,23 @@ public abstract class ModifiableTable<R> {
 				doAdd();
 			}
 		});
-		if (editOnly) {
+		if (!useAdd) {
+			button.setEnabled(false);
+		}
+	}
+
+	protected void createEditButton(Composite field) {
+		Button button = new Button(field, SWT.PUSH);
+		button.setText("edit");
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				doEdit();
+			}
+		});
+		if (useEdit) {
+			selectionButton.add(button);
+		} else {
 			button.setEnabled(false);
 		}
 	}
@@ -190,10 +211,10 @@ public abstract class ModifiableTable<R> {
 				doDelete();
 			}
 		});
-		if (editOnly) {
-			button.setEnabled(false);
-		} else {
+		if (useDelete) {
 			selectionButton.add(button);
+		} else {
+			button.setEnabled(false);
 		}
 	}
 
@@ -218,6 +239,11 @@ public abstract class ModifiableTable<R> {
 				}
 			});
 		}
+	}
+
+	public void setSelection(int index) {
+		table.setSelection(index);
+		refreshButtons();
 	}
 
 	public void setCheckedAll(boolean checked) {
@@ -331,6 +357,22 @@ public abstract class ModifiableTable<R> {
 			rowList.remove(index[i]);
 		}
 		refresh();
+	}
+
+	public int getIndex(R element) {
+		int i = 0;
+		for (R row : rowList) {
+			if (row == element) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	public void setEnabled(boolean enabled) {
+		table.setEnabled(enabled);
+		// TODO ボタンもsetEnabledしたい
 	}
 
 	public void setChecked(int i, boolean checked) {
