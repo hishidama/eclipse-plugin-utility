@@ -170,10 +170,36 @@ public class AstRewriteUtility {
 		List<TextElement> flist = tag.fragments();
 		flist.add(text);
 
-		Javadoc doc = ast.newJavadoc();
-		List<TagElement> tlist = doc.tags();
+		Javadoc javadoc = ast.newJavadoc();
+		List<TagElement> tlist = javadoc.tags();
 		tlist.add(tag);
 
-		return doc;
+		return javadoc;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected final void addJavadocParam(Javadoc javadoc, String name, String description) {
+		TagElement tag = ast.newTagElement();
+		tag.setTagName("@param");
+
+		tag.fragments().add(ast.newSimpleName(name));
+
+		TextElement text = ast.newTextElement();
+		text.setText(description);
+		tag.fragments().add(text);
+
+		javadoc.tags().add(tag);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected final void addJavadocReturn(Javadoc javadoc, String description) {
+		TagElement tag = ast.newTagElement();
+		tag.setTagName("@return");
+
+		TextElement text = ast.newTextElement();
+		text.setText(description);
+		tag.fragments().add(text);
+
+		javadoc.tags().add(tag);
 	}
 }
