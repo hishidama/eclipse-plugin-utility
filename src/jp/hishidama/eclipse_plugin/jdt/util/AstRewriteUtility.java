@@ -8,12 +8,15 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
@@ -25,6 +28,8 @@ import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
 import org.eclipse.jdt.ui.CodeStyleConfiguration;
@@ -150,13 +155,63 @@ public class AstRewriteUtility {
 
 	@SuppressWarnings("unchecked")
 	protected final Block newReturnNullBlock() {
-		ReturnStatement ret = ast.newReturnStatement();
-		ret.setExpression(ast.newNullLiteral());
-
 		Block block = ast.newBlock();
 		List<Statement> slist = block.statements();
-		slist.add(ret);
+		slist.add(newReturnStatement(ast.newNullLiteral()));
 		return block;
+	}
+
+	// Statement
+
+	/**
+	 * typeName varName = new typeName();
+	 * 
+	 * @param typeName
+	 *            クラス名
+	 * @param varName
+	 *            変数名
+	 * @return VariableDeclarationStatement
+	 */
+	protected final VariableDeclarationStatement newVariableDeclarationStatement(String typeName, String varName) {
+		ClassInstanceCreation creation = ast.newClassInstanceCreation();
+		creation.setType(newType(typeName));
+
+		VariableDeclarationFragment fragment = ast.newVariableDeclarationFragment();
+		fragment.setName(ast.newSimpleName(varName));
+		fragment.setInitializer(creation);
+
+		VariableDeclarationStatement statement = ast.newVariableDeclarationStatement(fragment);
+		statement.setType(newType(typeName));
+		return statement;
+	}
+
+	protected final ExpressionStatement newMethodInvocationStatement(String objectName, String methodName,
+			Expression... arguments) {
+		return ast.newExpressionStatement(newMethodInvocation(objectName, methodName, arguments));
+	}
+
+	protected final ReturnStatement newReturnStatement(Expression expression) {
+		ReturnStatement statement = ast.newReturnStatement();
+		statement.setExpression(expression);
+		return statement;
+	}
+
+	// Expression
+
+	@SuppressWarnings("unchecked")
+	protected final MethodInvocation newMethodInvocation(String objectName, String methodName, Expression... arguments) {
+		MethodInvocation method = ast.newMethodInvocation();
+		if (objectName != null) {
+			method.setExpression(ast.newSimpleName(objectName));
+		}
+		method.setName(ast.newSimpleName(methodName));
+
+		List<Expression> alist = method.arguments();
+		for (Expression arg : arguments) {
+			alist.add(arg);
+		}
+
+		return method;
 	}
 
 	// Javadoc
