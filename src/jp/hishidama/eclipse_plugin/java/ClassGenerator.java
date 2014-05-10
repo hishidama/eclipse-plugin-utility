@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.hishidama.eclipse_plugin.util.StringUtil;
+import static jp.hishidama.eclipse_plugin.util.StringUtil.*;
 
 public abstract class ClassGenerator {
 	protected static final Set<String> PRIMITIVE_SET = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
@@ -80,8 +80,19 @@ public abstract class ClassGenerator {
 			sb.append('\t');
 		}
 		sb.append("/** ");
-		sb.append(StringUtil.nonNull(title));
+		sb.append(nonNull(title));
 		sb.append(" */\n");
+	}
+
+	protected final void setParamJavadoc(StringBuilder sb, int tab, String name, String description) {
+		for (int i = 0; i < tab; i++) {
+			sb.append('\t');
+		}
+		sb.append(" * @param ");
+		sb.append(name);
+		sb.append(" ");
+		sb.append(nonNull(description));
+		sb.append("\n");
 	}
 
 	protected final String getCachedClassName(String className) {
