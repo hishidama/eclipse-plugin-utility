@@ -133,6 +133,19 @@ public class TypeUtil {
 		}
 	}
 
+	public static IMethod findConsructor(IType type) {
+		try {
+			for (IMethod method : type.getMethods()) {
+				if (method.isConstructor()) {
+					return method;
+				}
+			}
+		} catch (JavaModelException e) {
+			return null;
+		}
+		return null;
+	}
+
 	public static IMethod findMethod(IType type, String methodName) {
 		try {
 			for (IMethod method : type.getMethods()) {
