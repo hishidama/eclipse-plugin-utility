@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
@@ -62,6 +63,21 @@ public class AstRewriteUtility {
 			importRewrite = CodeStyleConfiguration.createImportRewrite(astRoot, true);
 		}
 		return importRewrite;
+	}
+
+	protected final MethodDeclaration findMethodDeclaration(final int offset) {
+		final MethodDeclaration[] found = new MethodDeclaration[1];
+		astRoot.accept(new ASTVisitor() {
+			@Override
+			public boolean visit(MethodDeclaration node) {
+				if (node.getStartPosition() <= offset && offset < node.getStartPosition() + node.getLength()) {
+					found[0] = node;
+				}
+				return false;
+			}
+		});
+		return found[0];
+
 	}
 
 	// Type
