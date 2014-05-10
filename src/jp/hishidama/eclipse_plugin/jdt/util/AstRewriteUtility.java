@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MemberValuePair;
@@ -77,7 +78,15 @@ public class AstRewriteUtility {
 			}
 		});
 		return found[0];
+	}
 
+	@SuppressWarnings("unchecked")
+	protected final String getFieldName(FieldDeclaration field) {
+		List<VariableDeclarationFragment> flist = field.fragments();
+		if (flist.size() <= 0) {
+			return null;
+		}
+		return flist.get(0).getName().getIdentifier();
 	}
 
 	// Type
@@ -128,12 +137,16 @@ public class AstRewriteUtility {
 	}
 
 	protected final MemberValuePair newMemberValuePair(String name, String value) {
+		StringLiteral s = ast.newStringLiteral();
+		s.setLiteralValue(value);
+		return newMemberValuePair(name, s);
+	}
+
+	protected final MemberValuePair newMemberValuePair(String name, Expression value) {
 		MemberValuePair pair = ast.newMemberValuePair();
 		pair.setName(ast.newSimpleName(name));
 
-		StringLiteral s = ast.newStringLiteral();
-		s.setLiteralValue(value);
-		pair.setValue(s);
+		pair.setValue(value);
 
 		return pair;
 	}
@@ -272,5 +285,11 @@ public class AstRewriteUtility {
 		tag.fragments().add(text);
 
 		javadoc.tags().add(tag);
+	}
+
+	protected final TextElement newTextElement(String text) {
+		TextElement elem = ast.newTextElement();
+		elem.setText(text);
+		return elem;
 	}
 }
