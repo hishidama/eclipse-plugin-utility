@@ -66,6 +66,13 @@ public abstract class ClassGenerator {
 
 	protected abstract void appendClass(StringBuilder sb);
 
+	protected final void setClassJavadoc(StringBuilder sb, String title) {
+		sb.append("/**\n");
+		sb.append(" * ");
+		sb.append(title);
+		sb.append("\n */\n");
+	}
+
 	protected final String getCachedClassName(String className) {
 		if (isPrimitive(className)) {
 			return className;
