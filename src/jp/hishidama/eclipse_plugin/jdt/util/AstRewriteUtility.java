@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.PrimitiveType.Code;
@@ -87,6 +88,19 @@ public class AstRewriteUtility {
 			return null;
 		}
 		return flist.get(0).getName().getIdentifier();
+	}
+
+	protected final String getJavadocParamName(TagElement tag) {
+		List<?> flist = tag.fragments();
+		if (flist.size() < 1) {
+			return null;
+		}
+		Object obj = flist.get(0);
+		if (obj instanceof SimpleName) {
+			SimpleName name = (SimpleName) obj;
+			return name.getIdentifier();
+		}
+		return null;
 	}
 
 	// Type
