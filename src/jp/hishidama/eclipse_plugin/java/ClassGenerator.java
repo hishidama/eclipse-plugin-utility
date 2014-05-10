@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jp.hishidama.eclipse_plugin.util.StringUtil;
+
 public abstract class ClassGenerator {
 	protected static final Set<String> PRIMITIVE_SET = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
 			"boolean", "byte", "short", "char", "int", "long", "float", "double")));
@@ -71,6 +73,15 @@ public abstract class ClassGenerator {
 		sb.append(" * ");
 		sb.append(title);
 		sb.append("\n */\n");
+	}
+
+	protected final void setLineJavadoc(StringBuilder sb, int tab, String title) {
+		for (int i = 0; i < tab; i++) {
+			sb.append('\t');
+		}
+		sb.append("/** ");
+		sb.append(StringUtil.nonNull(title));
+		sb.append(" */\n");
 	}
 
 	protected final String getCachedClassName(String className) {
