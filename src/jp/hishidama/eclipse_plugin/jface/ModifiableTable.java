@@ -13,10 +13,13 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -32,7 +35,7 @@ public abstract class ModifiableTable<R> {
 	private boolean useMove = true;
 	private boolean useDelete = true;
 
-	private TableViewer viewer;
+	protected final TableViewer viewer;
 	protected final Table table;
 	private int tableStyle;
 	protected final List<Button> selectionButton = new ArrayList<Button>();
@@ -58,6 +61,20 @@ public abstract class ModifiableTable<R> {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				doEdit();
+			}
+		});
+		table.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				Point point = new Point(e.x, e.y);
+
+				Table table = (Table) e.getSource();
+				TableItem item = table.getItem(point);
+				if (item == null) {
+					table.deselectAll();
+					refresh();
+				}
 			}
 		});
 	}
@@ -140,8 +157,7 @@ public abstract class ModifiableTable<R> {
 		createAddButton(field);
 		createEditButton(field);
 		{
-			Button button = new Button(field, SWT.PUSH);
-			button.setText("up");
+			Button button = createPushButton(field, "up");
 			button.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -155,8 +171,7 @@ public abstract class ModifiableTable<R> {
 			}
 		}
 		{
-			Button button = new Button(field, SWT.PUSH);
-			button.setText("down");
+			Button button = createPushButton(field, "down");
 			button.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -173,8 +188,7 @@ public abstract class ModifiableTable<R> {
 	}
 
 	protected void createAddButton(Composite field) {
-		Button button = new Button(field, SWT.PUSH);
-		button.setText("add");
+		Button button = createPushButton(field, "add");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -187,8 +201,7 @@ public abstract class ModifiableTable<R> {
 	}
 
 	protected void createEditButton(Composite field) {
-		Button button = new Button(field, SWT.PUSH);
-		button.setText("edit");
+		Button button = createPushButton(field, "edit");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -203,8 +216,7 @@ public abstract class ModifiableTable<R> {
 	}
 
 	protected void createDeleteButton(Composite field) {
-		Button button = new Button(field, SWT.PUSH);
-		button.setText("delete");
+		Button button = createPushButton(field, "delete");
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -220,8 +232,7 @@ public abstract class ModifiableTable<R> {
 
 	public void createCheckButtonArea(Composite field) {
 		{
-			Button button = new Button(field, SWT.PUSH);
-			button.setText("Check all");
+			Button button = createPushButton(field, "Check all");
 			button.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -239,6 +250,12 @@ public abstract class ModifiableTable<R> {
 				}
 			});
 		}
+	}
+
+	protected Button createPushButton(Composite parent, String text) {
+		Button button = new Button(parent, SWT.PUSH);
+		button.setText(text);
+		return button;
 	}
 
 	public void setSelection(int index) {
@@ -359,6 +376,14 @@ public abstract class ModifiableTable<R> {
 		refresh();
 	}
 
+	public final Table getTable() {
+		return table;
+	}
+
+	public final TableViewer getTableViewer() {
+		return viewer;
+	}
+
 	public int getIndex(R element) {
 		int i = 0;
 		for (R row : rowList) {
@@ -381,6 +406,18 @@ public abstract class ModifiableTable<R> {
 
 	public boolean getChecked(int i) {
 		return table.getItem(i).getChecked();
+	}
+
+	public int getSelectionIndex() {
+		return table.getSelectionIndex();
+	}
+
+	public int[] getSelectionIndices() {
+		return table.getSelectionIndices();
+	}
+
+	public TableItem[] getItems() {
+		return table.getItems();
 	}
 
 	public List<R> getElementList() {
