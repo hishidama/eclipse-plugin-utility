@@ -5,6 +5,7 @@ import java.util.Set;
 
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
@@ -173,6 +174,16 @@ public class TypeUtil {
 		String signature = variable.getTypeSignature();
 		String name = Signature.toString(signature);
 		return resolveTypeNameAll(name, variable.getDeclaringMember().getDeclaringType());
+	}
+
+	public static String getFieldTypeName(IField field) {
+		try {
+			String signature = field.getTypeSignature();
+			String name = Signature.toString(signature);
+			return resolveTypeNameAll(name, field.getDeclaringType());
+		} catch (JavaModelException e) {
+			return null;
+		}
 	}
 
 	public static String resolveTypeNameAll(String name, IType type) {
