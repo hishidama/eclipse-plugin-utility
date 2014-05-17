@@ -69,10 +69,17 @@ public class ClassSelectionDialog extends FilteredTypesSelectionDialog {
 		return super.open();
 	}
 
-	public String getSelectedClass() {
+	public IType getSelectedClass() {
 		Object[] r = super.getResult();
 		if (r.length > 0) {
-			IType type = (IType) r[0];
+			return (IType) r[0];
+		}
+		return null;
+	}
+
+	public String getSelectedClassName() {
+		IType type = getSelectedClass();
+		if (type != null) {
 			return type.getFullyQualifiedName();
 		}
 		return null;
