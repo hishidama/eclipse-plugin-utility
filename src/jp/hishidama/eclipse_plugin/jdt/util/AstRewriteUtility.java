@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
@@ -35,6 +36,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
+import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.ui.CodeStyleConfiguration;
 
 public class AstRewriteUtility {
@@ -65,6 +67,16 @@ public class AstRewriteUtility {
 			importRewrite = CodeStyleConfiguration.createImportRewrite(astRoot, true);
 		}
 		return importRewrite;
+	}
+
+	protected final FieldDeclaration findLastField(ListRewrite listRewrite) {
+		FieldDeclaration found = null;
+		for (Object object : listRewrite.getRewrittenList()) {
+			if (object instanceof FieldDeclaration) {
+				found = (FieldDeclaration) object;
+			}
+		}
+		return found;
 	}
 
 	protected final MethodDeclaration findMethodDeclaration(final int offset) {
@@ -182,6 +194,33 @@ public class AstRewriteUtility {
 		return pair;
 	}
 
+	// Field
+
+	protected final FieldDeclaration newFieldDeclaration(String typeName, String varName, boolean instanceCreation) {
+		ClassInstanceCreation creation = null;
+		if (instanceCreation) {
+			creation = ast.newClassInstanceCreation();
+			creation.setType(newType(typeName));
+		}
+
+		return newFieldDeclaration(typeName, varName, creation);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected final FieldDeclaration newFieldDeclaration(String typeName, String varName, Expression initializer) {
+		VariableDeclarationFragment fragment = ast.newVariableDeclarationFragment();
+		fragment.setName(ast.newSimpleName(varName));
+		if (initializer != null) {
+			fragment.setInitializer(initializer);
+		}
+
+		FieldDeclaration field = ast.newFieldDeclaration(fragment);
+		field.setType(newType(typeName));
+
+		field.modifiers().addAll(ast.newModifiers(Modifier.PRIVATE | Modifier.FINAL));
+		return field;
+	}
+
 	// Method
 
 	protected final MethodDeclaration newMethodDeclaration(String name) {
@@ -219,9 +258,14 @@ public class AstRewriteUtility {
 		ClassInstanceCreation creation = ast.newClassInstanceCreation();
 		creation.setType(newType(typeName));
 
+		return newVariableDeclarationStatement(typeName, varName, creation);
+	}
+
+	protected final VariableDeclarationStatement newVariableDeclarationStatement(String typeName, String varName,
+			Expression initializer) {
 		VariableDeclarationFragment fragment = ast.newVariableDeclarationFragment();
 		fragment.setName(ast.newSimpleName(varName));
-		fragment.setInitializer(creation);
+		fragment.setInitializer(initializer);
 
 		VariableDeclarationStatement statement = ast.newVariableDeclarationStatement(fragment);
 		statement.setType(newType(typeName));
