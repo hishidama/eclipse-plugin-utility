@@ -1,5 +1,8 @@
 package jp.hishidama.eclipse_plugin.dialog;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -93,7 +96,7 @@ public abstract class EditDialog extends Dialog {
 
 	protected abstract void refresh();
 
-	protected Button createRadioField(Composite composite, String label, String label1, String label2) {
+	protected List<Button> createRadioField(Composite composite, String label, String label1, String label2) {
 		createLabel(composite, label);
 
 		Composite field = new Composite(composite, SWT.NONE);
@@ -104,8 +107,11 @@ public abstract class EditDialog extends Dialog {
 		button2.setText(label2);
 
 		button1.addSelectionListener(SELECT_REFRESH_LISTENER);
+		button2.addSelectionListener(SELECT_REFRESH_LISTENER);
 
-		return button1;
+		createDummyColumn(composite, 2);
+
+		return Arrays.asList(button1, button2);
 	}
 
 	protected Text createTextField(Composite composite, String label) {
