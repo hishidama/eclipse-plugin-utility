@@ -35,6 +35,8 @@ public abstract class ModifiableTable<R> {
 	private boolean useMove = true;
 	private boolean useDelete = true;
 
+	private boolean visibleDup = false;
+
 	protected final TableViewer viewer;
 	protected final Table table;
 	private int tableStyle;
@@ -96,6 +98,10 @@ public abstract class ModifiableTable<R> {
 		this.useEdit = useEdit;
 		this.useMove = useMove;
 		this.useDelete = useDelete;
+	}
+
+	public void setVisibleDupButton(boolean use) {
+		this.visibleDup = use;
 	}
 
 	public void addColumn(String text, int width, int style) {
@@ -184,6 +190,9 @@ public abstract class ModifiableTable<R> {
 				button.setEnabled(false);
 			}
 		}
+		if (visibleDup) {
+			createDupButton(field);
+		}
 		createDeleteButton(field);
 	}
 
@@ -213,6 +222,17 @@ public abstract class ModifiableTable<R> {
 		} else {
 			button.setEnabled(false);
 		}
+	}
+
+	protected void createDupButton(Composite field) {
+		Button button = createPushButton(field, "dup");
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				doDuplicate();
+			}
+		});
+		selectionButton.add(button);
 	}
 
 	protected void createDeleteButton(Composite field) {
@@ -366,6 +386,19 @@ public abstract class ModifiableTable<R> {
 		T r2 = list.get(index2);
 		list.set(index1, r2);
 		list.set(index2, r1);
+	}
+
+	protected void doDuplicate() {
+		int[] index = table.getSelectionIndices();
+		for (int i = index.length - 1; i >= 0; i--) {
+			R row = dupElement(rowList.get(index[i]));
+			rowList.add(index[i] + 1, row);
+		}
+		refresh();
+	}
+
+	protected R dupElement(R element) {
+		throw new UnsupportedOperationException("not implements");
 	}
 
 	protected void doDelete() {
