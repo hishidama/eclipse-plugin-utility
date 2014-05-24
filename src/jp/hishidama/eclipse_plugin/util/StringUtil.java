@@ -19,6 +19,10 @@ public class StringUtil {
 		return (s != null) ? s : "";
 	}
 
+	public static String trim(String s) {
+		return (s != null) ? s.trim() : null;
+	}
+
 	public static String get(String s, String defaultString) {
 		if (nonEmpty(s)) {
 			return s;
