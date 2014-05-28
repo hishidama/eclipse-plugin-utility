@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -180,7 +179,7 @@ public abstract class EditDialog extends Dialog {
 
 	protected Composite createFillLayout(Composite composite, int span) {
 		Composite field = new Composite(composite, SWT.NONE);
-		GridData data = new GridData();
+		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.horizontalSpan = span;
 		field.setLayoutData(data);
 		field.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -220,7 +219,11 @@ public abstract class EditDialog extends Dialog {
 	}
 
 	protected void initializeTree(Tree tree) {
-		GridData data = GridDataFactory.fillDefaults().hint(128 * 3, 128 * 2).span(2, 1).create();
+		GridData data = new GridData(GridData.FILL_BOTH);
+		data.widthHint = 128 * 3;
+		data.heightHint = 128 * 2;
+		data.horizontalSpan = 2;
+		data.verticalSpan = 1;
 		tree.setLayoutData(data);
 
 		tree.addSelectionListener(new SelectionAdapter() {
