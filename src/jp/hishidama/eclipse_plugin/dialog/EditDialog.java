@@ -57,6 +57,12 @@ public abstract class EditDialog extends Dialog {
 		super(parentShell);
 		this.windowTitle = windowTitle;
 		this.numColumns = numColumns;
+
+		initializeShellStyle();
+	}
+
+	protected void initializeShellStyle() {
+		setShellStyle(getShellStyle() | SWT.RESIZE);
 	}
 
 	@Override
