@@ -82,7 +82,9 @@ public abstract class ModifiableTable<R> {
 	}
 
 	protected GridData createGridData() {
-		return new GridData(GridData.FILL_BOTH);
+		GridData data = new GridData(GridData.FILL_BOTH);
+		data.heightHint = 96;
+		return data;
 	}
 
 	public void setEditOnly(boolean editOnly) {
