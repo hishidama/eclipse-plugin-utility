@@ -166,7 +166,7 @@ public abstract class EditDialog extends Dialog {
 		createLabel(composite, label);
 
 		TextButtonPair pair = new TextButtonPair();
-		pair.text = createText(composite, 256, 1);
+		pair.text = createText(composite, SWT.SINGLE | SWT.BORDER, 256, 1);
 		pair.button = createPushButton(composite, buttonLabel);
 
 		createDummyColumn(composite, 3);
@@ -198,11 +198,15 @@ public abstract class EditDialog extends Dialog {
 	}
 
 	protected Text createText(Composite composite) {
-		return createText(composite, 128 * 3, numColumns - 1);
+		return createText(composite, SWT.SINGLE | SWT.BORDER);
 	}
 
-	protected Text createText(Composite composite, int widthHint, int span) {
-		final Text text = new Text(composite, SWT.SINGLE | SWT.BORDER);
+	protected Text createText(Composite composite, int style) {
+		return createText(composite, style, 128 * 3, numColumns - 1);
+	}
+
+	protected Text createText(Composite composite, int style, int widthHint, int span) {
+		final Text text = new Text(composite, style);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = widthHint;
 		data.horizontalSpan = span;
