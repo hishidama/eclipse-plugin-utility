@@ -60,12 +60,18 @@ public abstract class EditWizardPage extends WizardPage {
 	}
 
 	protected final Text createText(Composite composite, int span) {
+		return createText(composite, span, MODIFY_REFRESH_LISTENER);
+	}
+
+	protected final Text createText(Composite composite, int span, ModifyListener listener) {
 		Text text = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		// data.widthHint = widthHint;
 		data.horizontalSpan = span;
 		text.setLayoutData(data);
-		text.addModifyListener(MODIFY_REFRESH_LISTENER);
+		if (listener != null) {
+			text.addModifyListener(listener);
+		}
 		return text;
 	}
 
