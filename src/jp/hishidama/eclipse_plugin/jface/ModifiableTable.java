@@ -195,6 +195,7 @@ public abstract class ModifiableTable<R> {
 		if (visibleDup) {
 			createDupButton(field);
 		}
+		createButtonAfterDup(field);
 		createDeleteButton(field);
 	}
 
@@ -235,6 +236,10 @@ public abstract class ModifiableTable<R> {
 			}
 		});
 		selectionButton.add(button);
+	}
+
+	protected void createButtonAfterDup(Composite field) {
+		// do override
 	}
 
 	protected void createDeleteButton(Composite field) {
