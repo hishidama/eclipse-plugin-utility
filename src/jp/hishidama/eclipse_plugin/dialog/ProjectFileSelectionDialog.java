@@ -12,6 +12,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Shell;
@@ -24,7 +26,12 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 	private IProject project;
 
 	public ProjectFileSelectionDialog(Shell parent, IProject project) {
-		super(parent, new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
+		this(parent, project, new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
+	}
+
+	public ProjectFileSelectionDialog(Shell parent, IProject project, ILabelProvider labelProvider,
+			ITreeContentProvider contentProvider) {
+		super(parent, labelProvider, contentProvider);
 		setInput(project);
 	}
 
@@ -94,9 +101,13 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 		});
 	}
 
+	protected final Object[] getOriginalResult() {
+		return super.getResult();
+	}
+
 	@Override
 	public String[] getResult() {
-		Object[] result = super.getResult();
+		Object[] result = getOriginalResult();
 		if (result == null) {
 			return null;
 		}
