@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
@@ -23,14 +24,14 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.PrimitiveType;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.TagElement;
-import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.PrimitiveType.Code;
 import org.eclipse.jdt.core.dom.ReturnStatement;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.TagElement;
+import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -67,6 +68,18 @@ public class AstRewriteUtility {
 			importRewrite = CodeStyleConfiguration.createImportRewrite(astRoot, true);
 		}
 		return importRewrite;
+	}
+
+	protected final MethodDeclaration findConstructor(ListRewrite listRewrite) {
+		for (Object object : listRewrite.getRewrittenList()) {
+			if (object instanceof MethodDeclaration) {
+				MethodDeclaration method = (MethodDeclaration) object;
+				if (method.isConstructor()) {
+					return method;
+				}
+			}
+		}
+		return null;
 	}
 
 	protected final FieldDeclaration findLastField(ListRewrite listRewrite) {
@@ -219,6 +232,13 @@ public class AstRewriteUtility {
 
 		field.modifiers().addAll(ast.newModifiers(Modifier.PRIVATE | Modifier.FINAL));
 		return field;
+	}
+
+	protected final FieldAccess newThisFieldAccess(String fieldName) {
+		FieldAccess a = ast.newFieldAccess();
+		a.setExpression(ast.newThisExpression());
+		a.setName(ast.newSimpleName(fieldName));
+		return a;
 	}
 
 	// Method
