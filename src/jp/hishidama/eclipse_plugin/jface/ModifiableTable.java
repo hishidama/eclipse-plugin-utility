@@ -58,6 +58,9 @@ public abstract class ModifiableTable<R> {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				refreshButtons();
+				if (e.detail == SWT.CHECK) {
+					widgetChecked(e);
+				}
 			}
 
 			@Override
@@ -66,7 +69,6 @@ public abstract class ModifiableTable<R> {
 			}
 		});
 		table.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mouseDown(MouseEvent e) {
 				Point point = new Point(e.x, e.y);
@@ -259,7 +261,7 @@ public abstract class ModifiableTable<R> {
 
 	public void createCheckButtonArea(Composite field) {
 		{
-			Button button = createPushButton(field, "Check all");
+			Button button = createPushButton(field, "Check All");
 			button.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -269,7 +271,7 @@ public abstract class ModifiableTable<R> {
 		}
 		{
 			Button button = new Button(field, SWT.PUSH);
-			button.setText("Uncheck all");
+			button.setText("Uncheck All");
 			button.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -294,6 +296,11 @@ public abstract class ModifiableTable<R> {
 		for (TableItem item : table.getItems()) {
 			item.setChecked(checked);
 		}
+		widgetChecked(null);
+	}
+
+	protected void widgetChecked(SelectionEvent e) {
+		// do override
 	}
 
 	public void refresh() {
@@ -462,5 +469,15 @@ public abstract class ModifiableTable<R> {
 
 	public List<R> getElementList() {
 		return rowList;
+	}
+
+	public List<R> getCheckedElementList() {
+		List<R> list = new ArrayList<R>(rowList.size());
+		for (int i = 0; i < rowList.size(); i++) {
+			if (getChecked(i)) {
+				list.add(rowList.get(i));
+			}
+		}
+		return list;
 	}
 }
