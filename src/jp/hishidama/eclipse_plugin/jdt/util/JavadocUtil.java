@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.hishidama.eclipse_plugin.util.StringUtil;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -17,6 +19,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -28,15 +31,37 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class JavadocUtil {
 
-	public static Javadoc getJavadoc(IType type) {
+	public static Javadoc getJavadoc(final IType type) {
 		if (type == null) {
 			return null;
 		}
 		JavadocFinder visitor = new JavadocFinder(type) {
 			@Override
 			public boolean visit(TypeDeclaration node) {
-				this.javadoc = node.getJavadoc();
-				return false;
+				try {
+					if (!type.isEnum()) {
+						if (StringUtil.equals(node.getName().getIdentifier(), type.getElementName())) {
+							this.javadoc = node.getJavadoc();
+							return false;
+						}
+					}
+				} catch (JavaModelException e) {
+				}
+				return true;
+			}
+
+			@Override
+			public boolean visit(EnumDeclaration node) {
+				try {
+					if (type.isEnum()) {
+						if (StringUtil.equals(node.getName().getIdentifier(), type.getElementName())) {
+							this.javadoc = node.getJavadoc();
+							return false;
+						}
+					}
+				} catch (JavaModelException e) {
+				}
+				return true;
 			}
 		};
 		return getJavadoc(type.getCompilationUnit(), visitor);
