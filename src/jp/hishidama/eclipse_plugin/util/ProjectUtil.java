@@ -4,6 +4,9 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.text.TextSelection;
@@ -14,6 +17,16 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 public class ProjectUtil {
+
+	public static IProject getProject(String projectName) {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+		IProject project = root.getProject(projectName);
+		if (project.exists()) {
+			return project;
+		}
+		return null;
+	}
 
 	public static IProject getProject(ExecutionEvent event) {
 		ISelection selection = HandlerUtil.getCurrentSelection(event);
