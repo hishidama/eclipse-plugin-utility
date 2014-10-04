@@ -23,6 +23,13 @@ public class StringUtil {
 		return (s != null) ? s.trim() : null;
 	}
 
+	public static String removeBlank(String s) {
+		if (s == null) {
+			return s;
+		}
+		return s.replaceAll("[ \t\r\n]", "");
+	}
+
 	public static String get(String s, String defaultString) {
 		if (nonEmpty(s)) {
 			return s;
