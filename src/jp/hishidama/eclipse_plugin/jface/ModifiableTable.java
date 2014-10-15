@@ -418,9 +418,17 @@ public abstract class ModifiableTable<R> {
 	protected void doDelete() {
 		int[] index = table.getSelectionIndices();
 		for (int i = index.length - 1; i >= 0; i--) {
-			rowList.remove(index[i]);
+			int n = index[i];
+			R row = rowList.get(n);
+			if (isDelete(row)) {
+				rowList.remove(n);
+			}
 		}
 		refresh();
+	}
+
+	protected boolean isDelete(R element) {
+		return true; // do override
 	}
 
 	public final Table getTable() {
