@@ -1,6 +1,6 @@
 package jp.hishidama.eclipse_plugin.dialog;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -101,22 +101,24 @@ public abstract class EditDialog extends Dialog {
 
 	protected abstract void refresh();
 
-	protected List<Button> createRadioField(Composite composite, String label, String label1, String label2) {
+	protected List<Button> createRadioField(Composite composite, String label, String... labels) {
 		createLabel(composite, label);
 
 		Composite field = new Composite(composite, SWT.NONE);
 		field.setLayout(new RowLayout(SWT.HORIZONTAL));
-		final Button button1 = new Button(field, SWT.RADIO);
-		button1.setText(label1);
-		final Button button2 = new Button(field, SWT.RADIO);
-		button2.setText(label2);
 
-		button1.addSelectionListener(SELECT_REFRESH_LISTENER);
-		button2.addSelectionListener(SELECT_REFRESH_LISTENER);
+		List<Button> list = new ArrayList<Button>(labels.length);
+		for (String radioLabel : labels) {
+			final Button button = new Button(field, SWT.RADIO);
+			button.setText(radioLabel);
+			button.addSelectionListener(SELECT_REFRESH_LISTENER);
+
+			list.add(button);
+		}
 
 		createDummyColumn(composite, 2);
 
-		return Arrays.asList(button1, button2);
+		return list;
 	}
 
 	protected Text createTextField(Composite composite, String label) {
