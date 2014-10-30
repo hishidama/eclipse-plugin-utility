@@ -192,4 +192,16 @@ public class StringUtil {
 		}
 		return s2 == null;
 	}
+
+	public static boolean isAll(String s, char c) {
+		if (s == null || s.isEmpty()) {
+			return false;
+		}
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) != c) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
