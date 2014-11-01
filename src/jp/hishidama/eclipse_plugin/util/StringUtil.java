@@ -172,6 +172,18 @@ public class StringUtil {
 		}
 	}
 
+	public static void mkString(StringBuilder sb, String separator, String... list) {
+		boolean first = true;
+		for (String s : list) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(separator);
+			}
+			sb.append(s);
+		}
+	}
+
 	public static String toString(List<?> list) {
 		if (list == null) {
 			return null;

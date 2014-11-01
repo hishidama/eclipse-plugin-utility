@@ -14,19 +14,24 @@ import java.util.Properties;
 
 import jp.hishidama.eclipse_plugin.util.internal.LogUtil;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -69,6 +74,70 @@ public class FileUtil {
 				return ((IFileEditorInput) input).getFile();
 			}
 		}
+		return null;
+	}
+
+	public static IFile getFile(ISelection selection) {
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection sselection = (IStructuredSelection) selection;
+			Object element = sselection.getFirstElement();
+			if (element instanceof IFile) {
+				return (IFile) element;
+			}
+			if (element instanceof IJavaElement) {
+				element = ((IJavaElement) element).getResource();
+			} else if (element instanceof IAdaptable) {
+				IAdaptable adaptable = (IAdaptable) element;
+				element = adaptable.getAdapter(IResource.class);
+			}
+			if (element instanceof IFile) {
+				return (IFile) element;
+			}
+		}
+
+		return null;
+	}
+
+	public static IFolder getFolder(ISelection selection) {
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection sselection = (IStructuredSelection) selection;
+			Object element = sselection.getFirstElement();
+			if (element instanceof IFolder) {
+				return (IFolder) element;
+			}
+			if (element instanceof IFile) {
+				element = ((IFile) element).getParent();
+			}
+			if (element instanceof IJavaElement) {
+				element = ((IJavaElement) element).getResource();
+			} else if (element instanceof IAdaptable) {
+				IAdaptable adaptable = (IAdaptable) element;
+				element = adaptable.getAdapter(IResource.class);
+			}
+			if (element instanceof IFile) {
+				element = ((IFile) element).getParent();
+			}
+			if (element instanceof IFolder) {
+				return (IFolder) element;
+			}
+		}
+
+		return null;
+	}
+
+	public static IContainer getExistingFolder(IResource resource) {
+		if (resource.exists()) {
+			if (resource instanceof IContainer) {
+				return (IContainer) resource;
+			}
+			return resource.getParent();
+		}
+		for (IContainer c = resource.getParent(); c != null; c = c.getParent()) {
+			if (c.exists()) {
+				return c;
+			}
+		}
+
 		return null;
 	}
 

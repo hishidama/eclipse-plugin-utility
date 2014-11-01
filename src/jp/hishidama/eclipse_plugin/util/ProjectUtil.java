@@ -11,8 +11,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.TreePath;
-import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -36,19 +35,10 @@ public class ProjectUtil {
 			if (file != null) {
 				return file.getProject();
 			}
-		} else if (selection instanceof TreeSelection) {
-			TreeSelection tree = (TreeSelection) selection;
-			TreePath[] paths = tree.getPaths();
-			for (TreePath treePath : paths) {
-				Object segment = treePath.getLastSegment();
-				if (segment instanceof IResource) {
-					return ((IResource) segment).getProject();
-				} else if (segment instanceof IJavaElement) {
-					return ((IJavaElement) segment).getJavaProject().getProject();
-				} else if (segment instanceof IAdaptable) {
-					IAdaptable adaptable = (IAdaptable) segment;
-					return (IProject) adaptable.getAdapter(IProject.class);
-				}
+		} else {
+			IProject project = getProject(selection);
+			if (project != null) {
+				return project;
 			}
 		}
 
@@ -56,6 +46,23 @@ public class ProjectUtil {
 		IFile file = FileUtil.getFile(editor);
 		if (file != null) {
 			return file.getProject();
+		}
+
+		return null;
+	}
+
+	public static IProject getProject(ISelection selection) {
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection sselection = (IStructuredSelection) selection;
+			Object element = sselection.getFirstElement();
+			if (element instanceof IResource) {
+				return ((IResource) element).getProject();
+			} else if (element instanceof IJavaElement) {
+				return ((IJavaElement) element).getJavaProject().getProject();
+			} else if (element instanceof IAdaptable) {
+				IAdaptable adaptable = (IAdaptable) element;
+				return (IProject) adaptable.getAdapter(IProject.class);
+			}
 		}
 
 		return null;
