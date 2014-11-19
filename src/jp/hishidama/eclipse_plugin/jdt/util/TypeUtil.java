@@ -15,6 +15,17 @@ import org.eclipse.jdt.core.Signature;
 
 public class TypeUtil {
 
+	public static IType findType(IJavaProject project, String name) {
+		if (project == null || name == null) {
+			return null;
+		}
+		try {
+			return project.findType(name);
+		} catch (JavaModelException e) {
+			return null;
+		}
+	}
+
 	public static IType resolveType(String name, IType type) {
 		String resolvedName = resolveTypeName(name, type);
 		if (resolvedName == null) {
@@ -148,6 +159,9 @@ public class TypeUtil {
 	}
 
 	public static IMethod findMethod(IType type, String methodName) {
+		if (type == null || methodName == null) {
+			return null;
+		}
 		try {
 			for (IMethod method : type.getMethods()) {
 				if (methodName.equals(method.getElementName())) {
