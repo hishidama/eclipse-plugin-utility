@@ -33,6 +33,9 @@ public abstract class JdtHyperlinkDetector extends AbstractHyperlinkDetector {
 	public IHyperlink[] detectHyperlinks(ITextEditor editor, int offset) {
 		IEditorInput input = editor.getEditorInput();
 		IJavaElement element = (IJavaElement) input.getAdapter(IJavaElement.class);
+		if (element == null) {
+			return null;
+		}
 
 		IDocument document = editor.getDocumentProvider().getDocument(input);
 		IRegion word = findWord(document, offset);
