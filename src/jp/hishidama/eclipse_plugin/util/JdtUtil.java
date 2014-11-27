@@ -7,6 +7,8 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
@@ -80,5 +82,13 @@ public class JdtUtil {
 			return null;
 		}
 		return text;
+	}
+
+	public static String getFQCN(Type type) {
+		ITypeBinding bind = type.resolveBinding();
+		if (bind == null) {
+			throw new IllegalStateException("bind=null. do ASTParser#setResolveBindings(true)");
+		}
+		return bind.getQualifiedName();
 	}
 }
