@@ -34,6 +34,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -248,6 +249,19 @@ public class FileUtil {
 			try {
 				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				IDE.openEditor(page, file);
+				return true;
+			} catch (Exception e) {
+				// fall through
+			}
+		}
+		return false;
+	}
+
+	public static boolean openSystemEditor(IFile file) {
+		if (file.exists()) {
+			try {
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IDE.openEditor(page, file, IEditorRegistry.SYSTEM_EXTERNAL_EDITOR_ID);
 				return true;
 			} catch (Exception e) {
 				// fall through
