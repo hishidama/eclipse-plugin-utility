@@ -117,27 +117,27 @@ public class TypeUtil {
 		try {
 			String[] ss = type.getSuperInterfaceNames();
 			for (String s : ss) {
-				if (interfaceName.contains(s)) {
-					return s;
+				String resolved = resolveTypeName(s, type);
+				if (interfaceName.contains(resolved)) {
+					return resolved;
+				}
+
+				IType itype = TypeUtil.findType(type.getJavaProject(), resolved);
+				String found = findImplements(itype, interfaceName);
+				if (found != null) {
+					return found;
 				}
 			}
+
 			String superClass = type.getSuperclassName();
 			if (superClass == null || "java.lang.Object".equals(superClass)) {
 				return null;
 			}
-			String[][] resolved = type.resolveType(superClass);
-			if (resolved == null) {
-				return null;
-			}
-			for (String[] names : resolved) {
-				String resPack = names[0];
-				String resName = names[1];
-				IJavaProject javaProject = type.getJavaProject();
-				IType superType = javaProject.findType(resPack, resName);
-				String r = findImplements(superType, interfaceName);
-				if (r != null) {
-					return r;
-				}
+
+			IType superType = resolveType(superClass, type);
+			String found = findImplements(superType, interfaceName);
+			if (found != null) {
+				return found;
 			}
 			return null;
 		} catch (JavaModelException e) {
