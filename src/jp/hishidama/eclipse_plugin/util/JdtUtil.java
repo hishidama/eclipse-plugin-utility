@@ -1,17 +1,25 @@
 package jp.hishidama.eclipse_plugin.util;
 
+import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 public class JdtUtil {
 
@@ -53,8 +61,49 @@ public class JdtUtil {
 		}
 	}
 
+	public static IJavaElement getJavaElement(ExecutionEvent event) {
+		ISelection selection = HandlerUtil.getCurrentSelection(event);
+		if (selection instanceof IStructuredSelection) {
+			return getJavaElement((IStructuredSelection) selection);
+		}
+		if (selection instanceof ITextSelection) {
+			IEditorPart editor = HandlerUtil.getActiveEditor(event);
+			int offset = ((ITextSelection) selection).getOffset();
+			return getJavaElement(editor, offset);
+		}
+
+		IEditorPart editor = HandlerUtil.getActiveEditor(event);
+		ISelection s = editor.getSite().getSelectionProvider().getSelection();
+		if (s instanceof ITextSelection) {
+			int offset = ((ITextSelection) s).getOffset();
+			return getJavaElement(editor, offset);
+		}
+
+		return null;
+	}
+
 	public static IJavaElement getJavaElement(IStructuredSelection selection) {
 		return new DummyContainerPage().getInitialJavaElement(selection);
+	}
+
+	public static IJavaElement getJavaElement(IEditorPart editor, int offset) {
+		IEditorInput input = editor.getEditorInput();
+		IJavaElement element = (IJavaElement) input.getAdapter(IJavaElement.class);
+		if (element == null) {
+			return null;
+		}
+
+		try {
+			ITypeRoot root = (ITypeRoot) element.getAdapter(ITypeRoot.class);
+			IJavaElement[] codes = root.codeSelect(offset, 0);
+			for (IJavaElement code : codes) {
+				return code;
+			}
+		} catch (JavaModelException e) {
+			// fall through
+		}
+
+		return element;
 	}
 
 	public static IPackageFragmentRoot getPackageFragmentRoot(IJavaElement element) {
