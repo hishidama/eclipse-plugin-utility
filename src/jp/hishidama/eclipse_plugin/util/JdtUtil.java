@@ -1,11 +1,21 @@
 package jp.hishidama.eclipse_plugin.util;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+
+import jp.hishidama.eclipse_plugin.util.internal.LogUtil;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IClasspathContainer;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
@@ -139,5 +149,97 @@ public class JdtUtil {
 			throw new IllegalStateException("bind=null. do ASTParser#setResolveBindings(true)");
 		}
 		return bind.getQualifiedName();
+	}
+
+	public static void collectProjectClassPath(List<URL> list, IJavaProject project) {
+		collectOutputLocationClassPath(list, project);
+
+		try {
+			IClasspathEntry[] cp = project.getRawClasspath();
+			collectClassPath(list, project, cp);
+		} catch (JavaModelException e) {
+			LogUtil.logWarn("JdtUtil.collectProjectClassPath()", e);
+		}
+	}
+
+	private static void collectOutputLocationClassPath(List<URL> list, IJavaProject project) {
+		try {
+			IPath path = project.getOutputLocation();
+			IPath root = project.getProject().getWorkspace().getRoot().getRawLocation();
+			URL url = root.append(path).toFile().toURI().toURL();
+			list.add(url);
+		} catch (JavaModelException e) {
+		} catch (MalformedURLException e) {
+		}
+	}
+
+	private static void collectClassPath(List<URL> list, IJavaProject project, IClasspathEntry[] cp) {
+		for (IClasspathEntry ce : cp) {
+			URL url = null;
+			try {
+				switch (ce.getEntryKind()) {
+				case IClasspathEntry.CPE_SOURCE:
+					url = toURL(project.getProject(), ce.getOutputLocation());
+					break;
+				case IClasspathEntry.CPE_VARIABLE:
+					url = toURL(project.getProject(), JavaCore.getResolvedVariablePath(ce.getPath()));
+					break;
+				case IClasspathEntry.CPE_LIBRARY:
+					url = toURL(project.getProject(), ce.getPath());
+					break;
+				case IClasspathEntry.CPE_CONTAINER:
+					if (!ce.getPath().toPortableString().contains("JRE_CONTAINER")) {
+						IClasspathContainer cr = JavaCore.getClasspathContainer(ce.getPath(), project);
+						collectClassPath(list, project, cr.getClasspathEntries());
+					}
+					break;
+				default:
+					break;
+				}
+			} catch (Exception e) {
+				LogUtil.logWarn("JdtUtil.getClassPath()", e);
+			}
+			if (url != null) {
+				list.add(url);
+			}
+		}
+	}
+
+	public static URL toURL(IProject project, IPath path) throws MalformedURLException {
+		if (path == null) {
+			return null;
+		}
+		if (path.toFile().exists()) {
+			URL url = path.toFile().toURI().toURL();
+			return url;
+		}
+		IPath vp = JavaCore.getResolvedVariablePath(path);
+		if (vp != null) {
+			URL url = vp.toFile().toURI().toURL();
+			return url;
+		}
+		try {
+			IFile file = project.getFile(path);
+			if (file.exists()) {
+				URI uri = file.getLocationURI();
+				if (uri != null) {
+					return uri.toURL();
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.logWarn("JdtUtil.toURL()", e);
+		}
+		try {
+			IFile file = project.getParent().getFile(path);
+			if (file.exists()) {
+				URI uri = file.getLocationURI();
+				if (uri != null) {
+					return uri.toURL();
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.logWarn("JdtUtil.toURL()", e);
+		}
+		return null;
 	}
 }
