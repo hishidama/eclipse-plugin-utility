@@ -190,6 +190,12 @@ public class TypeUtil {
 		return resolveTypeNameAll(name, variable.getDeclaringMember().getDeclaringType());
 	}
 
+	public static String getVariableTypeSimpleName(ILocalVariable variable) {
+		String signature = variable.getTypeSignature();
+		String name = Signature.toString(signature);
+		return resolveTypeSimpleNameAll(name);
+	}
+
 	public static String getFieldTypeName(IField field) {
 		try {
 			String signature = field.getTypeSignature();
@@ -210,6 +216,22 @@ public class TypeUtil {
 			}
 
 			sb.append(resolveTypeName(name.substring(i, n), type));
+			sb.append(name.charAt(n));
+			i = n + 1;
+		}
+		return sb.toString();
+	}
+
+	private static String resolveTypeSimpleNameAll(String name) {
+		StringBuilder sb = new StringBuilder(name.length() * 2);
+		for (int i = 0; i < name.length();) {
+			int n = indexOf(name, "<,>", i);
+			if (n < 0) {
+				sb.append(StringUtil.getSimpleName(name.substring(i)));
+				break;
+			}
+
+			sb.append(StringUtil.getSimpleName(name.substring(i, n)));
 			sb.append(name.charAt(n));
 			i = n + 1;
 		}
