@@ -166,34 +166,7 @@ public abstract class ModifiableTable<R> {
 	public void createButtonArea(Composite field) {
 		createAddButton(field);
 		createEditButton(field);
-		{
-			Button button = createPushButton(field, "up");
-			button.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					doMove(-1);
-				}
-			});
-			if (useMove) {
-				selectionButton.add(button);
-			} else {
-				button.setEnabled(false);
-			}
-		}
-		{
-			Button button = createPushButton(field, "down");
-			button.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					doMove(+1);
-				}
-			});
-			if (useMove) {
-				selectionButton.add(button);
-			} else {
-				button.setEnabled(false);
-			}
-		}
+		createMoveButton(field);
 		if (visibleDup) {
 			createDupButton(field);
 		}
@@ -226,6 +199,37 @@ public abstract class ModifiableTable<R> {
 			selectionButton.add(button);
 		} else {
 			button.setEnabled(false);
+		}
+	}
+
+	protected void createMoveButton(Composite field) {
+		{
+			Button button = createPushButton(field, "up");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					doMove(-1);
+				}
+			});
+			if (useMove) {
+				selectionButton.add(button);
+			} else {
+				button.setEnabled(false);
+			}
+		}
+		{
+			Button button = createPushButton(field, "down");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					doMove(+1);
+				}
+			});
+			if (useMove) {
+				selectionButton.add(button);
+			} else {
+				button.setEnabled(false);
+			}
 		}
 	}
 
