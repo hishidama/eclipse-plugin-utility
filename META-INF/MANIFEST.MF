@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: eclipse plugin hishidama utility
-Bundle-SymbolicName: jp.hishidama.eclipse_plugin.utility
+Bundle-SymbolicName: jp.hishidama.eclipse_plugin.utility;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-Activator: jp.hishidama.eclipse_plugin.util.internal.Activator
 Bundle-Vendor: hishidama
@@ -19,7 +19,6 @@ Bundle-ActivationPolicy: lazy
 Export-Package: jp.hishidama.eclipse_plugin.dialog,
  jp.hishidama.eclipse_plugin.java,
  jp.hishidama.eclipse_plugin.jdt.hyperlink,
- jp.hishidama.eclipse_plugin.jdt.method,
  jp.hishidama.eclipse_plugin.jdt.util,
  jp.hishidama.eclipse_plugin.jface,
  jp.hishidama.eclipse_plugin.util,
