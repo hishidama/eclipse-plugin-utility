@@ -203,6 +203,10 @@ public abstract class EditDialog extends Dialog {
 		return createText(composite, SWT.SINGLE | SWT.BORDER);
 	}
 
+	protected Text createReadOnlyText(Composite composite) {
+		return createText(composite, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
+	}
+
 	protected Text createText(Composite composite, int style) {
 		return createText(composite, style, 128 * 3, numColumns - 1);
 	}
