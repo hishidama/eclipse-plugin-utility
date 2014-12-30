@@ -3,6 +3,8 @@ package jp.hishidama.eclipse_plugin.wizard.page;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -34,6 +36,14 @@ public abstract class EditWizardPage extends WizardPage {
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
+			validate(visible);
+		}
+	};
+
+	protected final ISelectionChangedListener SELECT_CHANGE_REFRESH_LISTENER = new ISelectionChangedListener() {
+
+		@Override
+		public void selectionChanged(SelectionChangedEvent event) {
 			validate(visible);
 		}
 	};
@@ -72,6 +82,15 @@ public abstract class EditWizardPage extends WizardPage {
 		if (listener != null) {
 			text.addModifyListener(listener);
 		}
+		return text;
+	}
+
+	protected final Text createReadOnlyText(Composite composite, int span) {
+		Text text = new Text(composite, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
+		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		// data.widthHint = widthHint;
+		data.horizontalSpan = span;
+		text.setLayoutData(data);
 		return text;
 	}
 
