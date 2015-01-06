@@ -31,7 +31,7 @@ public class ModifyMethodInvocationWizard extends Wizard {
 	private ModifyMethodArgumentPage argumentPage;
 
 	public ModifyMethodInvocationWizard() {
-		setWindowTitle("Modify Method Call");
+		setWindowTitle("Modify Method Invocation");
 	}
 
 	public void init(IMethod method, List<Expression> arguments, IDocument document, ASTNode node) {
