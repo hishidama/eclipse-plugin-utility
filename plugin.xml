@@ -21,4 +21,26 @@
          </enabledWhen>
       </handler>
    </extension>
+
+   <extension
+         point="org.eclipse.search.searchPages">
+      <page
+            id="jp.hishidama.eclipse_plugin.jdt.search.javaStringSearchPage"
+            label="String Search"
+            sizeHint="460,160"
+            extensions="java:90, jav:90"
+            showScopeSection="true"
+            canSearchEnclosingProjects="true"
+            class="jp.hishidama.eclipse_plugin.jdt.search.JavaStringSearchPage">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.search.searchResultViewPages">
+      <viewPage
+            id="jp.hishidama.eclipse_plugin.jdt.search.javaStringSearchResultPage"
+            searchResultClass="jp.hishidama.eclipse_plugin.jdt.search.JavaStringSearchResult"
+            helpContextId="org.eclipse.jdt.ui.java_search_result"
+            class="jp.hishidama.eclipse_plugin.jdt.search.JavaStringSearchResultPage">
+      </viewPage>
+   </extension>
 </plugin>
