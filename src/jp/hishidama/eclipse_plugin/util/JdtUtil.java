@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.util;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -165,9 +166,10 @@ public class JdtUtil {
 	private static void collectOutputLocationClassPath(List<URL> list, IJavaProject project) {
 		try {
 			IPath path = project.getOutputLocation();
-			IPath root = project.getProject().getWorkspace().getRoot().getRawLocation();
-			URL url = root.append(path).toFile().toURI().toURL();
-			list.add(url);
+			URL url = toURL(project.getProject(), path);
+			if (url != null) {
+				list.add(url);
+			}
 		} catch (JavaModelException e) {
 		} catch (MalformedURLException e) {
 		}
@@ -236,6 +238,30 @@ public class JdtUtil {
 				if (uri != null) {
 					return uri.toURL();
 				}
+			}
+		} catch (Exception e) {
+			LogUtil.logWarn("JdtUtil.toURL()", e);
+		}
+		try {
+			IPath raw = project.getRawLocation();
+			if (raw != null) {
+				File file = raw.append(path).toFile();
+				if (file.exists()) {
+					return file.toURI().toURL();
+				}
+				file = raw.removeLastSegments(1).append(path).toFile();
+				if (file.exists()) {
+					return file.toURI().toURL();
+				}
+			}
+		} catch (Exception e) {
+			LogUtil.logWarn("JdtUtil.toURL()", e);
+		}
+		try {
+			IPath root = project.getProject().getWorkspace().getRoot().getRawLocation();
+			File file = root.append(path).toFile();
+			if (file.exists()) {
+				return file.toURI().toURL();
 			}
 		} catch (Exception e) {
 			LogUtil.logWarn("JdtUtil.toURL()", e);
