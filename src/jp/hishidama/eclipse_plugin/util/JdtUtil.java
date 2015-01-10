@@ -4,6 +4,10 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.util.internal.LogUtil;
@@ -27,6 +31,7 @@ import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -70,6 +75,44 @@ public class JdtUtil {
 			super.initTypePage(element);
 			return super.getPackageText();
 		}
+	}
+
+	public static List<IJavaElement> getJavaElements(ExecutionEvent event) {
+		ISelection selection = HandlerUtil.getCurrentSelection(event);
+		if (selection instanceof IStructuredSelection) {
+			return getJavaElements((IStructuredSelection) selection);
+		}
+		if (selection instanceof ITextSelection) {
+			IEditorPart editor = HandlerUtil.getActiveEditor(event);
+			IEditorInput input = editor.getEditorInput();
+			IJavaElement element = (IJavaElement) input.getAdapter(IJavaElement.class);
+			if (element != null) {
+				ITypeRoot root = (ITypeRoot) element.getAdapter(ITypeRoot.class);
+				if (root != null) {
+					return Arrays.asList((IJavaElement) root);
+				} else {
+					return Arrays.asList(element);
+				}
+			}
+		}
+		IJavaElement element = getJavaElement(event);
+		if (element != null) {
+			return Arrays.asList(element);
+		}
+		return Collections.emptyList();
+	}
+
+	public static List<IJavaElement> getJavaElements(IStructuredSelection selection) {
+		List<IJavaElement> list = new ArrayList<IJavaElement>();
+		for (Iterator<?> i = selection.iterator(); i.hasNext();) {
+			Object object = i.next();
+			StructuredSelection ss = new StructuredSelection(object);
+			IJavaElement element = getJavaElement(ss);
+			if (element != null) {
+				list.add(element);
+			}
+		}
+		return list;
 	}
 
 	public static IJavaElement getJavaElement(ExecutionEvent event) {
