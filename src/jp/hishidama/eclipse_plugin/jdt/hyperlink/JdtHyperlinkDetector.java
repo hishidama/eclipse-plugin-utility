@@ -1,5 +1,10 @@
 package jp.hishidama.eclipse_plugin.jdt.hyperlink;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
@@ -7,6 +12,11 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -92,6 +102,18 @@ public abstract class JdtHyperlinkDetector extends AbstractHyperlinkDetector {
 				break;
 			}
 		}
+
+		if (element instanceof ICompilationUnit) {
+			ICompilationUnit unit = (ICompilationUnit) element;
+			StringFinder finder = findString(unit, offset);
+			if (finder.getWord() != null) {
+				IHyperlink[] r = detectStringHyperlinks(finder.getWord(), finder.getRegion(),unit, finder.getNodeList());
+				if (r != null) {
+					return r;
+				}
+			}
+		}
+
 		return null;
 	}
 
@@ -133,6 +155,75 @@ public abstract class JdtHyperlinkDetector extends AbstractHyperlinkDetector {
 		}
 	}
 
+	protected StringFinder findString(ICompilationUnit unit, int offset) {
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		parser.setSource(unit);
+		parser.setResolveBindings(true);
+		ASTNode node = parser.createAST(new NullProgressMonitor());
+
+		StringFinder finder = new StringFinder(offset);
+		node.accept(finder);
+
+		return finder;
+	}
+
+	protected static class StringFinder extends ASTVisitor {
+		private int offset;
+
+		private String word = null;
+		private IRegion region = null;
+		private boolean found = false;
+		private List<ASTNode> stack = null;
+
+		public StringFinder(int offset) {
+			this.offset = offset;
+		}
+
+		public String getWord() {
+			return word;
+		}
+
+		public IRegion getRegion() {
+			return region;
+		}
+
+		public List<ASTNode> getNodeList() {
+			return stack;
+		}
+
+		@Override
+		public boolean preVisit2(ASTNode node) {
+			if (found) {
+				return false;
+			}
+			return include(node);
+		}
+
+		protected boolean include(ASTNode node) {
+			int offset = node.getStartPosition();
+			int length = node.getLength();
+			return offset <= this.offset && this.offset <= offset + length;
+		}
+
+		@Override
+		public void postVisit(ASTNode node) {
+			if (found && include(node)) {
+				if (stack == null) {
+					stack = new ArrayList<ASTNode>();
+				}
+				stack.add(node);
+			}
+		}
+
+		@Override
+		public boolean visit(StringLiteral node) {
+			word = node.getLiteralValue();
+			region = new Region(node.getStartPosition() + 1, node.getLength() - 2);
+			found = true;
+			return false;
+		}
+	}
+
 	protected IHyperlink[] detectTypeHyperlinks(IType type, IRegion word) {
 		return null;
 	}
@@ -150,6 +241,10 @@ public abstract class JdtHyperlinkDetector extends AbstractHyperlinkDetector {
 	}
 
 	protected IHyperlink[] detectVariableHyperlinks(ILocalVariable variable, IRegion word) {
+		return null;
+	}
+
+	protected IHyperlink[] detectStringHyperlinks(String text, IRegion word, ICompilationUnit unit, List<ASTNode> stack) {
 		return null;
 	}
 }
