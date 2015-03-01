@@ -65,6 +65,7 @@ public class SelectMethodPage extends EditWizardPage {
 
 		viewer = new TreeViewer(composite);
 		GridData data = new GridData(GridData.FILL_BOTH);
+		data.widthHint = 512;
 		data.heightHint = 128;
 		viewer.getTree().setLayoutData(data);
 		viewer.setContentProvider(createViewerContentProvider());
