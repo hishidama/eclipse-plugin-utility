@@ -235,6 +235,10 @@ public abstract class EditDialog extends Dialog {
 	}
 
 	protected void initializeTree(Tree tree) {
+		initializeTree(tree, true);
+	}
+
+	protected void initializeTree(Tree tree, boolean addSelectionListener) {
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data.widthHint = 128 * 3;
 		data.heightHint = 128 * 2;
@@ -242,19 +246,21 @@ public abstract class EditDialog extends Dialog {
 		data.verticalSpan = 1;
 		tree.setLayoutData(data);
 
-		tree.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				refreshOkButton();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				if (refreshOkButton()) {
-					okPressed();
+		if (addSelectionListener) {
+			tree.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					refreshOkButton();
 				}
-			}
-		});
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+					if (refreshOkButton()) {
+						okPressed();
+					}
+				}
+			});
+		}
 	}
 
 	protected Table createCheckedTable(Composite composite) {
