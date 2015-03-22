@@ -33,6 +33,15 @@
             canSearchEnclosingProjects="true"
             class="jp.hishidama.eclipse_plugin.jdt.search.JavaStringSearchPage">
       </page>
+      <page
+            id="jp.hishidama.eclipse_plugin.jdt.search.stackTraceFileSearchPage"
+            label="StackTrace File Search"
+            sizeHint="460,160"
+            extensions="java:90, jav:90"
+            showScopeSection="true"
+            canSearchEnclosingProjects="true"
+            class="jp.hishidama.eclipse_plugin.jdt.search.StackTraceFileSearchPage">
+      </page>
    </extension>
    <extension
          point="org.eclipse.search.searchResultViewPages">
@@ -41,6 +50,11 @@
             searchResultClass="jp.hishidama.eclipse_plugin.jdt.search.JavaStringSearchResult"
             helpContextId="org.eclipse.jdt.ui.java_search_result"
             class="jp.hishidama.eclipse_plugin.jdt.search.JavaStringSearchResultPage">
+      </viewPage>
+      <viewPage
+            id="jp.hishidama.eclipse_plugin.jdt.search.stackTraceFileSearchResultPage"
+            searchResultClass="jp.hishidama.eclipse_plugin.jdt.search.StackTraceFileSearchResult"
+            class="jp.hishidama.eclipse_plugin.jdt.search.StackTraceFileSearchResultPage">
       </viewPage>
    </extension>
 </plugin>
