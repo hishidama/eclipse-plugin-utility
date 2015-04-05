@@ -211,11 +211,19 @@ public class TypeUtil {
 		for (int i = 0; i < name.length();) {
 			int n = indexOf(name, "<,>", i);
 			if (n < 0) {
-				sb.append(resolveTypeName(name.substring(i), type));
+				String resolveName = resolveTypeName(name.substring(i), type);
+				if (resolveName == null) {
+					resolveName = name;
+				}
+				sb.append(resolveName);
 				break;
 			}
-
-			sb.append(resolveTypeName(name.substring(i, n), type));
+			String part = name.substring(i, n);
+			String resolveName = resolveTypeName(part, type);
+			if (resolveName == null) {
+				resolveName = part;
+			}
+			sb.append(resolveName);
 			sb.append(name.charAt(n));
 			i = n + 1;
 		}
