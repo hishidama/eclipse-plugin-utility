@@ -131,6 +131,10 @@ public class AstRewriteUtility {
 	// Type
 
 	protected final Type newType(String typeName) {
+		if (isTypeParameter(typeName)) {
+			return ast.newSimpleType(ast.newSimpleName(typeName));
+		}
+
 		Code typeCode = PrimitiveType.toCode(typeName);
 		if (typeCode != null) {
 			return ast.newPrimitiveType(typeCode);
@@ -138,6 +142,10 @@ public class AstRewriteUtility {
 
 		String t = getImportRewrite().addImport(typeName);
 		return ast.newSimpleType(ast.newSimpleName(t));
+	}
+
+	protected boolean isTypeParameter(String typeName) {
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")
