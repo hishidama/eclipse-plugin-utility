@@ -141,6 +141,9 @@ public class AstRewriteUtility {
 		}
 
 		String t = getImportRewrite().addImport(typeName);
+		if (t.contains(".")) {
+			return ast.newSimpleType(ast.newName(t));
+		}
 		return ast.newSimpleType(ast.newSimpleName(t));
 	}
 
