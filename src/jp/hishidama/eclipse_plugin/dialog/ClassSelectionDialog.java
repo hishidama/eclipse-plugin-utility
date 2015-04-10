@@ -32,6 +32,11 @@ public class ClassSelectionDialog extends FilteredTypesSelectionDialog {
 		return create(shell, javaProject, context, kind, extension);
 	}
 
+	public static ClassSelectionDialog createEnum(Shell shell, IJavaProject javaProject, IRunnableContext context,
+			Filter extension) {
+		return create(shell, javaProject, context, IJavaSearchConstants.ENUM, extension);
+	}
+
 	public static ClassSelectionDialog create(Shell shell, IJavaProject javaProject, IRunnableContext context,
 			int kind, Filter extension) {
 		IJavaElement[] elements = new IJavaElement[] { javaProject };
