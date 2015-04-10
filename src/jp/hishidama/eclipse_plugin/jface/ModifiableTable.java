@@ -283,6 +283,26 @@ public abstract class ModifiableTable<R> {
 				}
 			});
 		}
+		{
+			Button button = createPushButton(field, "Check Selection");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					setCheckedSelection(true);
+				}
+			});
+			selectionButton.add(button);
+		}
+		{
+			Button button = createPushButton(field, "Uncheck Selection");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					setCheckedSelection(false);
+				}
+			});
+			selectionButton.add(button);
+		}
 	}
 
 	protected Button createPushButton(Composite parent, String text) {
@@ -298,6 +318,13 @@ public abstract class ModifiableTable<R> {
 
 	public void setCheckedAll(boolean checked) {
 		for (TableItem item : table.getItems()) {
+			item.setChecked(checked);
+		}
+		widgetChecked(null);
+	}
+
+	public void setCheckedSelection(boolean checked) {
+		for (TableItem item : table.getSelection()) {
 			item.setChecked(checked);
 		}
 		widgetChecked(null);
