@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.search.core.text.TextSearchEngine;
 import org.eclipse.search.core.text.TextSearchScope;
 import org.eclipse.search.internal.ui.text.FileSearchQuery;
 import org.eclipse.search.internal.ui.text.SearchResultUpdater;
@@ -32,7 +31,7 @@ public class StackTraceFileSearchQuery extends FileSearchQuery {
 		StackTraceFileSearchRequestor requestor = new StackTraceFileSearchRequestor(fData, textResult);
 		Pattern searchPattern = Pattern.compile(".*");
 
-		return TextSearchEngine.create().search(scope, requestor, searchPattern, monitor);
+		return new StackTraceFileSearchVisitor(requestor, searchPattern).search(scope, monitor);
 	}
 
 	@Override

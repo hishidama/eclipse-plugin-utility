@@ -19,6 +19,8 @@ public class StackTraceFileSearchRequestor extends TextSearchRequestor {
 
 	private final StackTraceFileSearchData fData;
 	private final AbstractTextSearchResult fResult;
+
+	private Set<Integer> fLines;
 	private List<FileMatch> fCachedMatches;
 
 	public StackTraceFileSearchRequestor(StackTraceFileSearchData data, AbstractTextSearchResult result) {
@@ -30,6 +32,7 @@ public class StackTraceFileSearchRequestor extends TextSearchRequestor {
 	public boolean acceptFile(IFile file) throws CoreException {
 		if (fData.acceptFile(file)) {
 			flushMatches();
+			fLines = fData.getLines(file);
 			return true;
 		}
 		return false;
@@ -41,8 +44,8 @@ public class StackTraceFileSearchRequestor extends TextSearchRequestor {
 
 		LineElement lineElement = getLineElement(matchOffset, matchRequestor);
 		if (lineElement != null) {
-			Set<Integer> lines = fData.getLines(matchRequestor.getFile());
-			if (lines.contains(lineElement.getLine())) {
+			int line = lineElement.getLine();
+			if (fLines.contains(line)) {
 				FileMatch fileMatch = new FileMatch(matchRequestor.getFile(), matchOffset,
 						matchRequestor.getMatchLength(), lineElement);
 				fCachedMatches.add(fileMatch);

@@ -32,7 +32,8 @@ public class StackTraceFileSearchData {
 
 	public boolean acceptFile(IFile file) {
 		String name = file.getName();
-		return fileNameSet.contains(name);
+		boolean accept = fileNameSet.contains(name);
+		return accept;
 	}
 
 	public Set<Integer> getLines(IFile file) {

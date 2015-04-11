@@ -98,7 +98,7 @@ public class StackTraceFileSearchPage extends DialogPage implements ISearchPage 
 		String text = fStackTraceText.getText();
 		String[] ss = text.split("[\r\n]+");
 		Pattern pattern = Pattern
-				.compile(".*\\s(?<qualifier>.+)\\s*\\.\\s*(?<simpleName>.+)\\s*\\.\\s*(?<method>.+)\\s*\\(\\s*(?<file>.+\\.java)\\s*\\:\\s*(?<line>\\d+)\\s*\\).*");
+				.compile("(.*\\s|^)(?<qualifier>.+)\\s*\\.\\s*(?<simpleName>.+)\\s*\\.\\s*(?<method>.+)\\s*\\(\\s*(?<file>.+\\.java)\\s*\\:\\s*(?<line>\\d+)\\s*\\).*");
 
 		for (String s : ss) {
 			Matcher matcher = pattern.matcher(s);
