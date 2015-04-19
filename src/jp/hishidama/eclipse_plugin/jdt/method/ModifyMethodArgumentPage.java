@@ -15,10 +15,13 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -86,6 +89,19 @@ public class ModifyMethodArgumentPage extends EditWizardPage {
 		public void createButtonArea(Composite field) {
 			createEditButton(field);
 			createMoveButton(field);
+			createFillButton(field);
+		}
+
+		protected void createFillButton(Composite field) {
+			Button button = createPushButton(field, "fill");
+			button.setToolTipText("argument valueにparameter nameをセットします。");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					doFill();
+				}
+			});
+			selectionButton.add(button);
 		}
 
 		@Override
@@ -221,6 +237,18 @@ public class ModifyMethodArgumentPage extends EditWizardPage {
 			boolean sel2 = selected[index2];
 			selected[index1] = sel2;
 			selected[index2] = sel1;
+		}
+
+		void doFill() {
+			List<ArgumentRow> list = getElementList();
+			int[] indices = getSelectionIndices();
+			for (int i : indices) {
+				ArgumentRow row = list.get(i);
+				row.value = row.name;
+				row.valueType = null;
+			}
+
+			refresh();
 		}
 	}
 
