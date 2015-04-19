@@ -152,21 +152,29 @@ public class StringUtil {
 	}
 
 	public static String mkString(List<String> list) {
+		return mkString(list, ", ");
+	}
+
+	public static String mkString(List<String> list, String separetor) {
 		if (list == null) {
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
-		mkString(sb, list);
+		mkString(sb, separetor, list);
 		return sb.toString();
 	}
 
 	public static void mkString(StringBuilder sb, List<String> list) {
+		mkString(sb, ", ", list);
+	}
+
+	public static void mkString(StringBuilder sb, String separator, List<String> list) {
 		boolean first = true;
 		for (String s : list) {
 			if (first) {
 				first = false;
 			} else {
-				sb.append(", ");
+				sb.append(separator);
 			}
 			sb.append(s);
 		}
