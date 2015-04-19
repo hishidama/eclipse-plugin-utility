@@ -10,11 +10,11 @@ import org.eclipse.swt.widgets.Combo;
 public class DialogSettingsUtil {
 
 	public static void load(IDialogSettings settings, Combo combo, String key, String defaultValue) {
-		String value = getString(settings, key, defaultValue);
-		combo.setText(value);
-
 		List<String> list = getList(settings, key);
 		combo.setItems(list.toArray(new String[list.size()]));
+
+		String value = getString(settings, key, defaultValue);
+		combo.setText(value);
 	}
 
 	public static void save(IDialogSettings settings, Combo combo, String key, int limit) {
@@ -22,14 +22,33 @@ public class DialogSettingsUtil {
 		put(settings, key, text);
 
 		String[] items = combo.getItems();
-		List<String> list = new ArrayList<String>(items.length);
+		List<String> list = new ArrayList<String>(items.length + 1);
+		if (!text.isEmpty()) {
+			list.add(text);
+		}
 		for (String value : items) {
 			if (!text.equals(value)) {
 				list.add(value);
 			}
 		}
-		list.add(0, text);
 		put(settings, key, list, limit);
+	}
+
+	public static void refreshComboItems(Combo combo) {
+		String text = combo.getText();
+
+		String[] items = combo.getItems();
+		List<String> list = new ArrayList<String>(items.length + 1);
+		if (!text.isEmpty()) {
+			list.add(text);
+		}
+		for (String value : items) {
+			if (!text.equals(value)) {
+				list.add(value);
+			}
+		}
+		combo.setItems(list.toArray(new String[list.size()]));
+		combo.setText(text);
 	}
 
 	public static String getString(IDialogSettings settings, String key, String defaultValue) {
