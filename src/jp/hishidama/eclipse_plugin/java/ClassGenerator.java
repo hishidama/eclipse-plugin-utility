@@ -17,6 +17,7 @@ public abstract class ClassGenerator {
 
 	protected String packageName;
 	protected String className;
+	protected final Set<String> typeParameterSet = new HashSet<String>();
 
 	private Map<String, String> classNameMap;
 	private Set<String> simpleNameSet;
@@ -96,6 +97,9 @@ public abstract class ClassGenerator {
 	}
 
 	protected final String getCachedClassName(String className) {
+		if (isTypeParameter(className)) {
+			return className;
+		}
 		if (isPrimitive(className)) {
 			return className;
 		}
@@ -115,6 +119,10 @@ public abstract class ClassGenerator {
 			simpleNameSet.add(sname);
 			return sname;
 		}
+	}
+
+	protected boolean isTypeParameter(String className) {
+		return typeParameterSet.contains(className);
 	}
 
 	protected final boolean isPrimitive(String className) {
