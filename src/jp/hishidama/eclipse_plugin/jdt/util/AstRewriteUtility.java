@@ -336,17 +336,18 @@ public class AstRewriteUtility {
 
 	@SuppressWarnings("unchecked")
 	protected final Javadoc newJavadoc(String comment) {
-		TextElement text = ast.newTextElement();
-		text.setText(comment);
-
-		TagElement tag = ast.newTagElement();
-		List<TextElement> flist = tag.fragments();
-		flist.add(text);
-
 		Javadoc javadoc = ast.newJavadoc();
-		List<TagElement> tlist = javadoc.tags();
-		tlist.add(tag);
+		if (comment != null) {
+			TextElement text = ast.newTextElement();
+			text.setText(comment);
 
+			TagElement tag = ast.newTagElement();
+			List<TextElement> flist = tag.fragments();
+			flist.add(text);
+
+			List<TagElement> tlist = javadoc.tags();
+			tlist.add(tag);
+		}
 		return javadoc;
 	}
 
@@ -378,7 +379,9 @@ public class AstRewriteUtility {
 
 	protected final TextElement newTextElement(String text) {
 		TextElement elem = ast.newTextElement();
-		elem.setText(text);
+		if (text != null) {
+			elem.setText(text);
+		}
 		return elem;
 	}
 }
