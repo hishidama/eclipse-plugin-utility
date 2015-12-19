@@ -149,10 +149,7 @@ public class JdtUtil {
 
 		try {
 			ITypeRoot root = (ITypeRoot) element.getAdapter(ITypeRoot.class);
-			IJavaElement[] codes = root.codeSelect(offset, 0);
-			for (IJavaElement code : codes) {
-				return code;
-			}
+			return root.getElementAt(offset);
 		} catch (JavaModelException e) {
 			// fall through
 		}
