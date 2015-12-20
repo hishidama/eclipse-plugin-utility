@@ -18,7 +18,7 @@ public class StackTraceFileSearchQuery extends FileSearchQuery {
 	private StackTraceFileSearchResult fResult;
 
 	public StackTraceFileSearchQuery(StackTraceFileSearchData data, FileTextSearchScope scope) {
-		super("specified stack trace", false, true, false, scope);
+		super(data.getLabel(), false, true, false, scope);
 		this.fData = data;
 	}
 

@@ -5,10 +5,12 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -32,12 +34,19 @@ public class StackTraceFileSearchVisitor extends TextSearchVisitor {
 
 		IResource[] roots = scope.getRoots();
 		for (IResource root : roots) {
-			IPath location = root.getRawLocation();
-			if (location == null) {
-				location = root.getLocation();
-			}
-			if (location != null) {
-				collect(location.toFile(), set);
+			if (root instanceof IContainer) {
+				IContainer container = (IContainer) root;
+				try {
+					IResource[] members = container.members();
+					for (IResource resource : members) {
+						IPath location = resource.getLocation();
+						if (location != null) {
+							collect(location.toFile(), set);
+						}
+					}
+				} catch (CoreException e) {
+					// do nothing
+				}
 			}
 		}
 

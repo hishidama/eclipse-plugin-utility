@@ -49,4 +49,23 @@ public class StackTraceFileSearchData {
 
 		return lines;
 	}
+
+	public String getLabel() {
+		if (traceList.isEmpty()) {
+			return "specified stack trace";
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		TraceElement first = traceList.get(0);
+		sb.append(first.fileName);
+		sb.append(":");
+		sb.append(first.line);
+
+		if (traceList.size() >= 2) {
+			sb.append(" etc");
+		}
+
+		return sb.toString();
+	}
 }
