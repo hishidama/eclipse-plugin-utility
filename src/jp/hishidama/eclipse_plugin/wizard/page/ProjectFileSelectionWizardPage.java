@@ -1,5 +1,7 @@
 package jp.hishidama.eclipse_plugin.wizard.page;
 
+import java.util.Iterator;
+
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 import jp.hishidama.eclipse_plugin.util.ProjectUtil;
 
@@ -38,13 +40,14 @@ public class ProjectFileSelectionWizardPage extends EditWizardPage {
 	private IStructuredSelection initialSelection;
 	private IProject project;
 	private boolean check;
+	private boolean multi;
 
 	private Text folderText;
 	private TreeViewer folderViewer;
 	private Text fileText;
 
 	public ProjectFileSelectionWizardPage(IStructuredSelection selection) {
-		this("FileSelectionWizardPage", "File", "Select a existing file or input a new file name.", selection);
+		this("ProjectFileSelectionWizardPage", "File", "Select a existing file or input a new file name.", selection);
 	}
 
 	public ProjectFileSelectionWizardPage(String pageName, String title, String description, IStructuredSelection selection) {
@@ -52,9 +55,14 @@ public class ProjectFileSelectionWizardPage extends EditWizardPage {
 		this.initialSelection = selection;
 		this.project = ProjectUtil.getProject(selection);
 		this.check = false;
+		this.multi = false;
 
 		setTitle(title);
 		setDescription(description);
+	}
+
+	public void setMultiSelection(boolean multi) {
+		this.multi = multi;
 	}
 
 	@Override
@@ -69,7 +77,11 @@ public class ProjectFileSelectionWizardPage extends EditWizardPage {
 		createLabel(composite, "Enter or select the parent folder:").setFont(font);
 		folderText = createText(composite, 1);
 
-		folderViewer = check ? new CheckboxTreeViewer(composite, SWT.BORDER) : new TreeViewer(composite, SWT.BORDER);
+		int style = SWT.BORDER;
+		if (multi) {
+			style |= SWT.MULTI;
+		}
+		folderViewer = check ? new CheckboxTreeViewer(composite, style) : new TreeViewer(composite, style);
 		{
 			folderViewer.getTree().setFont(composite.getFont());
 			GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -142,6 +154,19 @@ public class ProjectFileSelectionWizardPage extends EditWizardPage {
 
 	protected boolean filterFile(IFile file) {
 		return true; // do override
+	}
+
+	protected void setFileText(IStructuredSelection selection, boolean expand) {
+		if (multi) {
+			for (Iterator<?> i = selection.iterator(); i.hasNext();) {
+				Object element = i.next();
+				ISelection s = new StructuredSelection(element);
+				setFileText(s, expand);
+			}
+			folderViewer.setSelection(selection);
+		} else {
+			setFileText((ISelection) selection, expand);
+		}
 	}
 
 	protected void setFileText(ISelection selection, boolean expand) {

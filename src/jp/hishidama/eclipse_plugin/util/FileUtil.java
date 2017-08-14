@@ -127,6 +127,9 @@ public class FileUtil {
 	}
 
 	public static IContainer getExistingFolder(IResource resource) {
+		if (resource == null) {
+			return null;
+		}
 		if (resource.exists()) {
 			if (resource instanceof IContainer) {
 				return (IContainer) resource;
