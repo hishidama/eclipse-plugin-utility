@@ -19,6 +19,16 @@ public class StringUtil {
 		return (s != null) ? s : "";
 	}
 
+	public static boolean containsUppreCase(String s) {
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (Character.isUpperCase(c)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static String trim(String s) {
 		return (s != null) ? s.trim() : null;
 	}
