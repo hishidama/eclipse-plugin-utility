@@ -25,6 +25,8 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
@@ -36,8 +38,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 public class JdtUtil {
+
+	@SuppressWarnings("deprecation")
+	public static ASTParser newASTParser() {
+		ASTParser parser;
+		try {
+			parser = ASTParser.newParser(AST.JLS8);
+		} catch (IllegalArgumentException e) {
+			parser = ASTParser.newParser(AST.JLS4);
+		}
+		return parser;
+	}
 
 	public static ICompilationUnit getJavaUnit(IFile file) {
 		IJavaElement element = JavaCore.create(file);
@@ -138,6 +152,11 @@ public class JdtUtil {
 
 	public static IJavaElement getJavaElement(IStructuredSelection selection) {
 		return new DummyContainerPage().getInitialJavaElement(selection);
+	}
+
+	public static int getOffset(ITextEditor editor) {
+		ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
+		return selection.getOffset();
 	}
 
 	public static IJavaElement getJavaElement(IEditorPart editor, int offset) {
