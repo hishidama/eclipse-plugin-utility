@@ -5,6 +5,8 @@ import java.util.Set;
 
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
+import org.eclipse.jdt.core.Flags;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
@@ -55,6 +57,20 @@ public class TypeUtil {
 		} catch (JavaModelException e) {
 			return null;
 		}
+	}
+
+	public static IType getPublicType(ICompilationUnit cu) {
+		try {
+			for (IType type : cu.getTypes()) {
+				int flag = type.getFlags();
+				if ((flag & Flags.AccPublic) != 0) {
+					return type;
+				}
+			}
+		} catch (JavaModelException e) {
+			// fall through
+		}
+		return null;
 	}
 
 	public static boolean isExtends(IType type, final String name) {
