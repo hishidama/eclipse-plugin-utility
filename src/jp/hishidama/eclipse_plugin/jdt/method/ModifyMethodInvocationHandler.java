@@ -70,7 +70,7 @@ public class ModifyMethodInvocationHandler extends AbstractHandler {
 		if (file == null) {
 			return null;
 		}
-		ICompilationUnit unit = JdtUtil.getJavaUnit(file);
+		ICompilationUnit unit = JdtUtil.getCompilationUnit(file);
 		if (unit == null) {
 			return null;
 		}

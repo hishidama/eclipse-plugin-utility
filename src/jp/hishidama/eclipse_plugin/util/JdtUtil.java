@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
@@ -53,7 +54,25 @@ public class JdtUtil {
 		return parser;
 	}
 
-	public static ICompilationUnit getJavaUnit(IFile file) {
+	public static ICompilationUnit getCompilationUnit(Object object) {
+		if (object instanceof IMember) {
+			IMember member = (IMember) object;
+			ICompilationUnit cu = member.getCompilationUnit();
+			if (cu != null) {
+				return cu;
+			}
+		}
+		if (object instanceof IJavaElement) {
+			IJavaElement element = (IJavaElement) object;
+			ICompilationUnit cu = (ICompilationUnit) element.getAncestor(IJavaElement.COMPILATION_UNIT);
+			if (cu != null) {
+				return cu;
+			}
+		}
+		return null;
+	}
+
+	public static ICompilationUnit getCompilationUnit(IFile file) {
 		IJavaElement element = JavaCore.create(file);
 		if (element == null) {
 			return null;
