@@ -103,10 +103,11 @@ public abstract class EditDialog extends Dialog {
 	protected abstract void refresh();
 
 	protected List<Button> createRadioField(Composite composite, String label, String... labels) {
-		createLabel(composite, label);
+		if (label != null) {
+			createLabel(composite, label);
+		}
 
-		Composite field = new Composite(composite, SWT.NONE);
-		field.setLayout(new RowLayout(SWT.HORIZONTAL));
+		Composite field = createRowLayout(composite);
 
 		List<Button> list = new ArrayList<Button>(labels.length);
 		for (String radioLabel : labels) {
@@ -210,6 +211,15 @@ public abstract class EditDialog extends Dialog {
 		return field;
 	}
 
+	protected Composite createRowLayout(Composite composite) {
+		Composite field = new Composite(composite, SWT.NONE);
+		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
+		layout.marginTop = 0;
+		layout.marginBottom = 0;
+		field.setLayout(layout);
+		return field;
+	}
+
 	protected Label createLabel(Composite composite, String text) {
 		Label label = new Label(composite, SWT.LEFT);
 		label.setText(text);
@@ -241,6 +251,12 @@ public abstract class EditDialog extends Dialog {
 
 	protected Button createPushButton(Composite composite, String text) {
 		Button button = new Button(composite, SWT.PUSH);
+		button.setText(text);
+		return button;
+	}
+
+	protected Button createCheckButton(Composite composite, String text) {
+		Button button = new Button(composite, SWT.CHECK);
 		button.setText(text);
 		return button;
 	}
