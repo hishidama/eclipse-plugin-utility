@@ -2,6 +2,8 @@ package jp.hishidama.eclipse_plugin.jdt.util;
 
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.util.JdtUtil;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
@@ -49,7 +51,7 @@ public class AstRewriteUtility {
 	private ImportRewrite importRewrite;
 
 	protected void initializeAst(ICompilationUnit cu) {
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = JdtUtil.newASTParser();
 		parser.setSource(cu);
 		astRoot = (CompilationUnit) parser.createAST(new NullProgressMonitor());
 		astRoot.recordModifications();
@@ -292,8 +294,7 @@ public class AstRewriteUtility {
 		return newVariableDeclarationStatement(typeName, varName, creation);
 	}
 
-	protected final VariableDeclarationStatement newVariableDeclarationStatement(String typeName, String varName,
-			Expression initializer) {
+	protected final VariableDeclarationStatement newVariableDeclarationStatement(String typeName, String varName, Expression initializer) {
 		VariableDeclarationFragment fragment = ast.newVariableDeclarationFragment();
 		fragment.setName(ast.newSimpleName(varName));
 		fragment.setInitializer(initializer);
@@ -303,8 +304,7 @@ public class AstRewriteUtility {
 		return statement;
 	}
 
-	protected final ExpressionStatement newMethodInvocationStatement(String objectName, String methodName,
-			Expression... arguments) {
+	protected final ExpressionStatement newMethodInvocationStatement(String objectName, String methodName, Expression... arguments) {
 		return ast.newExpressionStatement(newMethodInvocation(objectName, methodName, arguments));
 	}
 

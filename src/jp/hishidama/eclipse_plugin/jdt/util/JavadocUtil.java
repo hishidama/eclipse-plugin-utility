@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.hishidama.eclipse_plugin.util.JdtUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -14,7 +15,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.ISourceReference;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -96,7 +96,7 @@ public class JavadocUtil {
 	}
 
 	private static Javadoc getJavadoc(ICompilationUnit cu, JavadocFinder visitor) {
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = JdtUtil.newASTParser();
 		parser.setSource(cu);
 		CompilationUnit astRoot = (CompilationUnit) parser.createAST(new NullProgressMonitor());
 
